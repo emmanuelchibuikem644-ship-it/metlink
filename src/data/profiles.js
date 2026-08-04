@@ -1109,32 +1109,581 @@ const profiles = [
     posts: 31,
     price_cents: 20000, // $200
     gallery: [
-      "/WhatsApp Image 2026-07-30 at 12.57.45 PM.jpeg",
-      "/WhatsApp Image 2026-07-30 at 1.16.40 PM.jpeg",
-      "/WhatsApp Image 2026-07-30 at 1.20.17 PM.jpeg",
+      
     ],
-  },{
+  },
+  {
     id: 48,
-    username: "Pierre",
-    displayName: "Pierre",
+    username: "Alexander",
+    displayName: "Alexander",
     verified: true,
     online: true,
     age: 27,
-    city: "Paris",
-    country: "France",
+    city: "Vienna",
+    country: "Austria",
     gender: "male",
     orientation: "gay",
     sexual_role: "Versatile",
-    avatar: "/WhatsApp Image 2026-07-30 at 12.57.45 PM.jpeg",
+    avatar: "/WhatsApp Image 2026-07-30 at 1.08.14 PM.jpeg",
     cover: "",
     bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
     followers: "4.5K",
     posts: 31,
     price_cents: 20000, // $200
     gallery: [
-      "/WhatsApp Image 2026-07-30 at 12.57.45 PM.jpeg",
-      "/WhatsApp Image 2026-07-30 at 1.16.40 PM.jpeg",
-      "/WhatsApp Image 2026-07-30 at 1.20.17 PM.jpeg",
+     
+    ],
+  },
+  
+    {
+    id: 48,
+    username: "Adbullah-k",
+    displayName: "Adbullah",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "AI Ahmadi",
+    country: "Austria",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 2.22.05 PM.jpeg",
+    cover: "",
+    bio: "Love going to the gym and pulling some muscles in the dick.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "DIM-TRI",
+    displayName: "Dimitrise",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Thessaloniki",
+    country: "Greece",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Top",
+    avatar: "/WhatsApp Image 2026-07-30 at 1.08.14 PM.jpeg",
+    cover: "",
+    bio: "Ready for some fun!", 
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "Eero",
+    displayName: "Eero",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Tampere",
+    country: "Finland",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 2.20.22 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "Oscar-Max",
+    displayName: "Oscar",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Gothenburg",
+    country: "Sweden",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 2.19.11 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "Tobias",
+    displayName: "Tobias",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Salzburg",
+    country: "Austria",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 2.18.50 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 30000, 
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "NoaH",
+    displayName: "Noah",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Geneva",
+    country: "SWitzerland",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 2.18.29 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "Bram",
+    displayName: "Bram",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Rotterdam",
+    country: "Netherlands",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Top",
+    avatar: "/WhatsApp Image 2026-07-30 at 2.16.53 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "Tiago",
+    displayName: "Tiago",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "porto",
+    country: "portugal",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 2.16.29 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "Javier",
+    displayName: "Javier",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Barcelona",
+    country: "Spain",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 2.15.52 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "",
+    displayName: "Alessandro",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Milan",
+    country: "Italy",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 2.15.29 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "Alexander",
+    displayName: "Felix",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Frankfurt",
+    country: "Germany",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 2.15.22 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "Alexander",
+    displayName: "Alexander",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Vienna",
+    country: "Austria",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 1.08.14 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "Alexander",
+    displayName: "Alexander",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Vienna",
+    country: "Austria",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 1.08.14 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "Alexander",
+    displayName: "Alexander",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Vienna",
+    country: "Austria",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 1.08.14 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "Alexander",
+    displayName: "Alexander",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Vienna",
+    country: "Austria",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 1.08.14 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "Alexander",
+    displayName: "Alexander",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Vienna",
+    country: "Austria",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 1.08.14 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "Alexander",
+    displayName: "Alexander",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Vienna",
+    country: "Austria",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 1.08.14 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "Alexander",
+    displayName: "Alexander",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Vienna",
+    country: "Austria",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 1.08.14 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "Alexander",
+    displayName: "Alexander",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Vienna",
+    country: "Austria",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 1.08.14 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "Alexander",
+    displayName: "Alexander",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Vienna",
+    country: "Austria",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 1.08.14 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "Alexander",
+    displayName: "Alexander",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Vienna",
+    country: "Austria",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 1.08.14 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "Alexander",
+    displayName: "Alexander",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Vienna",
+    country: "Austria",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 1.08.14 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "Alexander",
+    displayName: "Alexander",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Vienna",
+    country: "Austria",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 1.08.14 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
+    ],
+  },
+
+    {
+    id: 48,
+    username: "Alexander",
+    displayName: "Alexander",
+    verified: true,
+    online: true,
+    age: 27,
+    city: "Vienna",
+    country: "Austria",
+    gender: "male",
+    orientation: "gay",
+    sexual_role: "Versatile",
+    avatar: "/WhatsApp Image 2026-07-30 at 1.08.14 PM.jpeg",
+    cover: "",
+    bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
+    followers: "4.5K",
+    posts: 31,
+    price_cents: 20000, // $200
+    gallery: [
+     
     ],
   },
   {
@@ -1265,7 +1814,7 @@ const profiles = [
     online: false,
     age: 27,
     city: "Brussels",
-    country: "Belguim",
+    country: "Belgium",
     gender: "male",
     orientation: "gay",
     sexual_role: "Versatile",
