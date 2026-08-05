@@ -69,9 +69,7 @@ const profiles = [
     posts: 50,
     price_cents: 20000, // $200
     gallery: [
-      "/WhatsApp Image 2026-07-13 at 3.05.59 PM.jpeg",
-      "/WhatsApp Image 2026-07-13 at 3.06.02 PM (1).jpeg",
-      "/WhatsApp Image 2026-07-13 at 3.06.02 PM.jpeg",
+    
     ],
   },
   {

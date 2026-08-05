@@ -264,7 +264,7 @@ export default function LandingPage() {
           <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-3">
             <div className="card">
               <p className="text-sm italic text-ink-400 dark:text-ink-900">
-                &ldquo;I&apos;d tried every app. Kindred was the first one where the conversations didn&apos;t fizzle out after &apos;hey&apos;.&rdquo;
+                &ldquo;I&apos;d tried every app. Meetlink  was the first one where the conversations didn&apos;t fizzle out after &apos;hey&apos;.&rdquo;
               </p>
               <p className="mt-4 text-sm text-gold-300 dark:text-gold-700">— Maya, 29</p>
             </div>
@@ -304,9 +304,9 @@ export default function LandingPage() {
           <h2 className="font-display text-3xl text-ink-50 dark:text-ink-950">A few things people ask us.</h2>
           <div className="mt-10 space-y-4">
             <details className="card group">
-              <summary className="cursor-pointer text-ink-50 dark:text-ink-950 marker:text-gold-400">Is Kindred free to join?</summary>
+              <summary className="cursor-pointer text-ink-50 dark:text-ink-950 marker:text-gold-400">Is Metlink free to join?</summary>
               <p className="mt-3 text-sm text-ink-400 dark:text-ink-600">
-                Yes — creating a profile, browsing, and matching are free. Premium unlocks unlimited likes, advanced filters, and more.
+                Yes —  login, browsing,  are free. Premium unlocks unlimited likes, advanced filters, and more.
               </p>
             </details>
             <details className="card group">
