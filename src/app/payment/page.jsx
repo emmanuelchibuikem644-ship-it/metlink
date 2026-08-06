@@ -1,17 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { CreditCard, Lock, ShieldCheck, Sparkles, CheckCircle2, ArrowRight, Bitcoin, Wallet, Landmark, Copy, ExternalLink } from "lucide-react";
+import { CreditCard, Landmark, ShieldCheck, Sparkles, CheckCircle2, ArrowRight, Bitcoin, Wallet, Copy, ExternalLink } from "lucide-react";
 import { api } from "../../lib/api";
 import ProtectedRoute from "../../components/ProtectedRoute";
-
-// ── Subscription plans ──────────────────────────────────────
-const PLANS = [
-  { id: "14days", label: "14 Days", priceCents: 2000, priceDisplay: "$20", duration: "14 days" },
-  { id: "1month", label: "1 Month", priceCents: 3500, priceDisplay: "$35", duration: "1 month", popular: true },
-];
+import { getCountryCurrency, formatPriceCents } from "../../data/currency";
 
 // ── Crypto coins ────────────────────────────────────────────
 const COINS = [
@@ -31,76 +26,147 @@ function PaymentContent() {
   const router = useRouter();
 
   const [profileInfo, setProfileInfo] = useState(() => {
-    if (typeof window === "undefined") return { id: null, name: "", avatar: "" };
+    if (typeof window === "undefined") return { id: null, name: "", avatar: "", country: "" };
     const id = window.sessionStorage.getItem("subscribe_to_profile_id");
     const name = window.sessionStorage.getItem("subscribe_to_profile_name");
     const avatar = window.sessionStorage.getItem("subscribe_to_profile_avatar");
+    const country = window.sessionStorage.getItem("subscribe_to_profile_country") || "";
     return id
-      ? { id: Number(id), name: name || "Profile", avatar: avatar || "" }
-      : { id: null, name: "", avatar: "" };
+      ? { id: Number(id), name: name || "Profile", avatar: avatar || "", country }
+      : { id: null, name: "", avatar: "", country };
   });
 
-  const [step, setStep] = useState("plan"); // plan → method → card | crypto | paystack → success
-  const [selectedPlan, setSelectedPlan] = useState(PLANS[1]);
+  // Per-profile pricing loaded from the backend (set in admin)
+  const [profilePrice, setProfilePrice] = useState(null);
+  const [priceLoading, setPriceLoading] = useState(true);
+  const [priceError, setPriceError] = useState("");
+
+  // Currency derived from the profile's country
+  const currency = getCountryCurrency(profileInfo.country);
+
+  // Build the plan list from the profile's admin-set prices (in local currency)
+  const PLANS = profilePrice
+    ? [
+        {
+          id: "14days",
+          label: "14 Days",
+          priceCents: profilePrice.recurring_14day_price_cents,
+          priceDisplay: formatPriceCents(profilePrice.recurring_14day_price_cents, profileInfo.country),
+          duration: "14 days",
+        },
+        {
+          id: "month",
+          label: "1 Month",
+          priceCents: profilePrice.recurring_monthly_price_cents,
+          priceDisplay: formatPriceCents(profilePrice.recurring_monthly_price_cents, profileInfo.country),
+          duration: "1 month",
+          popular: true,
+        },
+      ]
+    : [];
+
+  const initialFeeDisplay = profilePrice
+    ? formatPriceCents(profilePrice.initial_price_cents, profileInfo.country)
+    : "";
+
+  // Load the profile's price from the backend
+  useEffect(() => {
+    if (!profileInfo.id) {
+      setPriceLoading(false);
+      setPriceError("No profile selected. Please go back and choose a profile to subscribe to.");
+      return;
+    }
+    setPriceLoading(true);
+    api.getProfilePrice(profileInfo.id)
+      .then((p) => {
+        setProfilePrice(p);
+        // Auto-select the first plan (14 days) once prices are known
+        setSelectedPlan({
+          id: "14days",
+          label: "14 Days",
+          priceCents: p.recurring_14day_price_cents,
+          priceDisplay: formatPriceCents(p.recurring_14day_price_cents, profileInfo.country),
+          duration: "14 days",
+        });
+      })
+      .catch((err) => {
+        setPriceError(err.message);
+        setProfilePrice(null);
+      })
+      .finally(() => setPriceLoading(false));
+  }, [profileInfo.id, profileInfo.country]);
+
+  const [step, setStep] = useState("plan"); // plan → method → paystack | crypto-select | crypto → success
+  const [selectedPlan, setSelectedPlan] = useState(null);
   const [selectedCoin, setSelectedCoin] = useState(COINS[0]);
   const [txHash, setTxHash] = useState("");
   const [copied, setCopied] = useState(false);
 
-  // Card fields
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [cvc, setCvc] = useState("");
-  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [paymentIntent, setPaymentIntent] = useState(null);
+  const [paystackData, setPaystackData] = useState(null);
   const [cryptoPaymentId, setCryptoPaymentId] = useState(null);
   const [verifying, setVerifying] = useState(false);
 
-  const priceDisplay = `$${(selectedPlan.priceCents / 100).toFixed(0)}`;
+  const priceDisplay = selectedPlan ? selectedPlan.priceDisplay : "";
+  const currencySymbol = currency.symbol;
 
-  function formatCardNumber(value) {
-    const digits = value.replace(/\D/g, "").slice(0, 16);
-    return digits.replace(/(\d{4})(?=\d)/g, "$1 ");
+  function handleCopyAddress() {
+    navigator.clipboard?.writeText(WALLET_ADDRESSES[selectedCoin.id]);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
-  function formatExpiry(value) {
-    const digits = value.replace(/\D/g, "").slice(0, 4);
-    if (digits.length > 2) return digits.slice(0, 2) + "/" + digits.slice(2);
-    return digits;
-  }
+  function handleGoToServices() { router.push("/service"); }
 
-  async function handleCreatePayment() {
-    if (!profileInfo.id) return;
+  // ── Paystack: initialize a transaction (card + bank transfer) ──
+  async function handlePaystackPayment() {
+    if (!profileInfo.id || !selectedPlan) return;
     setLoading(true);
     setError("");
     try {
-      const res = await api.createStripePayment(profileInfo.id);
-      setPaymentIntent(res);
-      setStep("card");
-    } catch (err) { setError(err.message); }
-    setLoading(false);
-  }
-
-  async function handleConfirmPayment() {
-    if (!cardNumber.trim() || !expiry.trim() || !cvc.trim() || !name.trim()) {
-      setError("Please fill in all card details.");
-      return;
+      const res = await api.createPaystackPayment(
+        profileInfo.id,
+        selectedPlan.id,
+        profileInfo.country,
+        currencySymbol
+      );
+      setPaystackData(res);
+      // Redirect to Paystack's hosted checkout (card, bank transfer, etc.)
+      window.location.href = res.authorization_url;
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
     }
-    setLoading(true);
-    setError("");
-    try {
-      const res = await api.confirmStripePayment(paymentIntent.payment_intent_id, profileInfo.id);
-      if (res.success) {
-        setStep("success");
-        ["subscribe_to_profile_id", "subscribe_to_profile_name", "subscribe_to_profile_avatar"].forEach(k => window.sessionStorage.removeItem(k));
-      }
-    } catch (err) { setError(err.message); }
-    setLoading(false);
   }
 
+  // ── Verify a Paystack transaction after redirect back ──
+  useEffect(() => {
+    // If we came back from Paystack with a reference, verify it
+    if (typeof window === "undefined") return;
+    const urlParams = new URLSearchParams(window.location.search);
+    const reference = urlParams.get("reference");
+    if (reference && profileInfo.id && selectedPlan && !paystackData) {
+      const p = selectedPlan;
+      setLoading(true);
+      setError("");
+      api.confirmPaystackPayment(reference, profileInfo.id, p.id, profileInfo.country, currencySymbol)
+        .then((res) => {
+          if (res.success) {
+            setStep("success");
+            ["subscribe_to_profile_id", "subscribe_to_profile_name", "subscribe_to_profile_avatar", "subscribe_to_profile_country"].forEach(k => window.sessionStorage.removeItem(k));
+          } else {
+            setError(res.detail || "Payment could not be verified.");
+          }
+        })
+        .catch((err) => setError(err.message))
+        .finally(() => setLoading(false));
+    }
+  }, [profileInfo.id, profileInfo.country, currencySymbol]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Crypto: create payment request ──
   async function handleCreateCryptoPayment() {
-    if (!profileInfo.id) return;
+    if (!profileInfo.id || !selectedPlan) return;
     setLoading(true);
     setError("");
     try {
@@ -124,7 +190,7 @@ function PaymentContent() {
       const res = await api.verifyCryptoPayment(cryptoPaymentId, txHash.trim());
       if (res.success) {
         setStep("success");
-        ["subscribe_to_profile_id", "subscribe_to_profile_name", "subscribe_to_profile_avatar"].forEach(k => window.sessionStorage.removeItem(k));
+        ["subscribe_to_profile_id", "subscribe_to_profile_name", "subscribe_to_profile_avatar", "subscribe_to_profile_country"].forEach(k => window.sessionStorage.removeItem(k));
       } else {
         setError(res.detail || "Payment could not be verified.");
       }
@@ -134,13 +200,33 @@ function PaymentContent() {
     setVerifying(false);
   }
 
-  function handleCopyAddress() {
-    navigator.clipboard?.writeText(WALLET_ADDRESSES[selectedCoin.id]);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  // ── Loading state ──
+  if (priceLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-ink-950 dark:bg-white">
+        <div className="text-center">
+          <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-gold-400 border-t-transparent" />
+          <p className="mt-4 text-sm text-ink-400 dark:text-ink-600">Loading pricing…</p>
+        </div>
+      </div>
+    );
   }
 
-  function handleGoToServices() { router.push("/service"); }
+  // ── No profile selected ──
+  if (!profileInfo.id || !profilePrice) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-ink-950 px-4 dark:bg-white">
+        <div className="mx-auto max-w-md text-center">
+          <p className="text-6xl text-ink-500">😕</p>
+          <h1 className="mt-4 font-display text-2xl text-ink-50 dark:text-ink-950">Unable to start subscription</h1>
+          <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">{priceError || "Please select a profile to subscribe to."}</p>
+          <Link href="/home" className="mt-6 inline-block rounded-full bg-gold-400 px-8 py-3 text-sm font-semibold text-ink-950 transition hover:bg-gold-300">
+            Browse Profiles
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   // ── Step: Choose plan ──
   if (step === "plan") {
@@ -151,6 +237,9 @@ function PaymentContent() {
             <p className="eyebrow mb-2">Subscription</p>
             <h1 className="font-display text-4xl text-ink-50 dark:text-ink-950">Choose your plan</h1>
             <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">Unlock full access to {profileInfo.name || "this profile"}</p>
+            <p className="mt-1 text-xs text-ink-500 dark:text-ink-600">
+              Prices shown in {currency.currency} ({currencySymbol})
+            </p>
           </div>
 
           {profileInfo.name && (
@@ -162,10 +251,18 @@ function PaymentContent() {
               )}
               <div>
                 <p className="text-lg font-semibold text-ink-50 dark:text-ink-950">{profileInfo.name}</p>
-                <p className="text-sm text-ink-400 dark:text-ink-600">Profile subscription</p>
+                <p className="text-sm text-ink-400 dark:text-ink-600">Profile subscription · {profileInfo.country || ""}</p>
               </div>
             </div>
           )}
+
+          {/* Initial unlock fee notice */}
+          <div className="mt-6 flex items-center gap-3 rounded-2xl border border-gold-400/30 bg-gold-400/10 p-4">
+            <Sparkles className="h-5 w-5 shrink-0 text-gold-400" />
+            <p className="text-sm text-ink-300 dark:text-ink-700">
+              <strong className="text-ink-50 dark:text-ink-950">{initialFeeDisplay}</strong> one-time unlock fee to access this profile. Then your recurring plan starts.
+            </p>
+          </div>
 
           <div className="mt-6 space-y-4">
             {PLANS.map((plan) => (
@@ -173,7 +270,7 @@ function PaymentContent() {
                 key={plan.id}
                 onClick={() => setSelectedPlan(plan)}
                 className={`relative w-full rounded-2xl border p-6 text-left transition ${
-                  selectedPlan.id === plan.id
+                  selectedPlan?.id === plan.id
                     ? "border-gold-400 bg-gold-400/10"
                     : "border-white/10 bg-ink-900/60 hover:border-gold-400/30 dark:border-ink-200 dark:bg-ink-100/60"
                 }`}
@@ -186,20 +283,25 @@ function PaymentContent() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-lg font-semibold text-ink-50 dark:text-ink-950">{plan.label}</p>
-                    <p className="mt-1 text-xs text-ink-400 dark:text-ink-600">Full access for {plan.duration}</p>
+                    <p className="mt-1 text-xs text-ink-400 dark:text-ink-600">Full access for {plan.duration} · recurring</p>
                   </div>
                   <p className="font-display text-3xl text-gold-300 dark:text-gold-500">{plan.priceDisplay}</p>
                 </div>
-                {selectedPlan.id === plan.id && (
+                {selectedPlan?.id === plan.id && (
                   <CheckCircle2 className="absolute right-4 top-4 h-5 w-5 text-gold-400" />
                 )}
               </button>
             ))}
           </div>
 
+          {error && (
+            <div className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">{error}</div>
+          )}
+
           <button
             onClick={() => setStep("method")}
-            className="mt-6 flex w-full items-center justify-center gap-3 rounded-full bg-gold-400 py-4 text-sm font-semibold text-ink-950 transition hover:bg-gold-300"
+            disabled={!selectedPlan}
+            className="mt-6 flex w-full items-center justify-center gap-3 rounded-full bg-gold-400 py-4 text-sm font-semibold text-ink-950 transition hover:bg-gold-300 disabled:opacity-50"
           >
             Continue <ArrowRight className="h-5 w-5" />
           </button>
@@ -218,7 +320,7 @@ function PaymentContent() {
           <div className="text-center">
             <p className="eyebrow mb-2">Payment method</p>
             <h1 className="font-display text-3xl text-ink-50 dark:text-ink-950">How would you like to pay?</h1>
-            <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">{selectedPlan.label} — {priceDisplay}</p>
+            <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">{selectedPlan.label} — {priceDisplay} · {currency.currency}</p>
           </div>
 
           {error && (
@@ -226,9 +328,9 @@ function PaymentContent() {
           )}
 
           <div className="mt-8 space-y-4">
-            {/* Card */}
+            {/* Paystack (card + bank transfer) */}
             <button
-              onClick={handleCreatePayment}
+              onClick={handlePaystackPayment}
               disabled={loading}
               className="flex w-full items-center gap-4 rounded-2xl border border-white/10 bg-ink-900/60 p-5 text-left transition hover:border-gold-400/30 dark:border-ink-200 dark:bg-ink-100/60"
             >
@@ -236,8 +338,24 @@ function PaymentContent() {
                 <CreditCard className="h-6 w-6 text-gold-400" />
               </div>
               <div className="flex-1">
-                <p className="font-semibold text-ink-50 dark:text-ink-950">Card Payment</p>
-                <p className="text-xs text-ink-400 dark:text-ink-600">Pay securely with Visa, Mastercard, etc.</p>
+                <p className="font-semibold text-ink-50 dark:text-ink-950">Card / Bank Transfer</p>
+                <p className="text-xs text-ink-400 dark:text-ink-600">Pay securely with Paystack (Visa, Mastercard, bank transfer)</p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-ink-500" />
+            </button>
+
+            {/* Paystack bank transfer */}
+            <button
+              onClick={handlePaystackPayment}
+              disabled={loading}
+              className="flex w-full items-center gap-4 rounded-2xl border border-white/10 bg-ink-900/60 p-5 text-left transition hover:border-gold-400/30 dark:border-ink-200 dark:bg-ink-100/60"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10">
+                <Landmark className="h-6 w-6 text-emerald-400" />
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-ink-50 dark:text-ink-950">Bank Transfer</p>
+                <p className="text-xs text-ink-400 dark:text-ink-600">Pay via bank transfer through Paystack</p>
               </div>
               <ArrowRight className="h-5 w-5 text-ink-500" />
             </button>
@@ -256,22 +374,11 @@ function PaymentContent() {
               </div>
               <ArrowRight className="h-5 w-5 text-ink-500" />
             </button>
-
-            {/* Paystack */}
-            <button
-              onClick={() => setStep("paystack")}
-              className="flex w-full items-center gap-4 rounded-2xl border border-white/10 bg-ink-900/60 p-5 text-left transition hover:border-gold-400/30 dark:border-ink-200 dark:bg-ink-100/60"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10">
-                <Landmark className="h-6 w-6 text-emerald-400" />
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold text-ink-50 dark:text-ink-950">Paystack</p>
-                <p className="text-xs text-ink-400 dark:text-ink-600">Pay with your local bank card</p>
-              </div>
-              <ArrowRight className="h-5 w-5 text-ink-500" />
-            </button>
           </div>
+
+          {loading && (
+            <p className="mt-4 text-center text-sm text-ink-400 dark:text-ink-600">Redirecting to Paystack…</p>
+          )}
 
           <button onClick={() => setStep("plan")} className="mt-4 block w-full text-center text-sm text-ink-400 hover:text-gold-300 transition dark:text-ink-600">Back</button>
         </div>
@@ -341,7 +448,7 @@ function PaymentContent() {
           <div className="text-center">
             <p className="eyebrow mb-2">Crypto payment</p>
             <h1 className="font-display text-3xl text-ink-50 dark:text-ink-950">Pay with {selectedCoin.label}</h1>
-            <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">Send {priceDisplay} worth of {selectedCoin.symbol} to the address below</p>
+            <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">Send {priceDisplay} ({selectedCoin.symbol}) to the address below</p>
           </div>
 
           {/* Changelly instructions */}
@@ -352,30 +459,26 @@ function PaymentContent() {
               </div>
               <div>
                 <p className="font-semibold text-ink-50 dark:text-ink-950">Pay with Changelly</p>
-                <p className="text-xs text-ink-400 dark:text-ink-600">Download the Changelly Exchange app to buy crypto and complete your payment</p>
+                <p className="text-xs text-ink-400 dark:text-ink-600">Buy crypto and complete your payment</p>
               </div>
             </div>
 
             <ol className="mt-4 space-y-3 text-sm text-ink-300 dark:text-ink-700">
               <li className="flex gap-3">
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-500/20 text-xs font-bold text-orange-400">1</span>
-                <span>Download the <strong className="text-ink-50 dark:text-ink-950">Changelly Exchange. Buy crypto</strong> app from the App Store or Google Play.</span>
+                <span>Download the <strong className="text-ink-50 dark:text-ink-950">Changelly Exchange. Buy crypto</strong> app.</span>
               </li>
               <li className="flex gap-3">
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-500/20 text-xs font-bold text-orange-400">2</span>
-                <span>Create an account and complete verification.</span>
+                <span>Buy or deposit <strong className="text-ink-50 dark:text-ink-950">{selectedCoin.symbol}</strong>.</span>
               </li>
               <li className="flex gap-3">
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-500/20 text-xs font-bold text-orange-400">3</span>
-                <span>Buy or deposit <strong className="text-ink-50 dark:text-ink-950">{selectedCoin.symbol}</strong> in your Changelly wallet.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-500/20 text-xs font-bold text-orange-400">4</span>
                 <span>Send <strong className="text-ink-50 dark:text-ink-950">{priceDisplay}</strong> worth of {selectedCoin.symbol} to the wallet address below.</span>
               </li>
               <li className="flex gap-3">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-500/20 text-xs font-bold text-orange-400">5</span>
-                <span>Paste your transaction hash below and submit. Your subscription will be activated once confirmed.</span>
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-500/20 text-xs font-bold text-orange-400">4</span>
+                <span>Paste your transaction hash and submit. Subscription activates once confirmed.</span>
               </li>
             </ol>
 
@@ -386,15 +489,6 @@ function PaymentContent() {
               className="mt-4 flex items-center justify-center gap-2 rounded-full bg-orange-500 py-3 text-sm font-semibold text-white transition hover:bg-orange-400"
             >
               Buy {selectedCoin.symbol} with card on Changelly <ExternalLink className="h-4 w-4" />
-            </a>
-
-            <a
-              href="https://changelly.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-2 flex items-center justify-center gap-2 rounded-full border border-orange-500/30 py-3 text-sm font-semibold text-orange-400 transition hover:bg-orange-500/10"
-            >
-              Download Changelly app <ExternalLink className="h-4 w-4" />
             </a>
           </div>
 
@@ -414,7 +508,7 @@ function PaymentContent() {
               </button>
             </div>
             <p className="mt-3 text-xs text-ink-500 dark:text-ink-600">
-              ⚠️ Only send {selectedCoin.symbol} on the <strong className="text-ink-400 dark:text-ink-500">{selectedCoin.network}</strong> network to this address. Sending on the wrong network or other coins may result in loss of funds.
+              ⚠️ Only send {selectedCoin.symbol} on the <strong className="text-ink-400 dark:text-ink-500">{selectedCoin.network}</strong> network.
             </p>
           </div>
 
@@ -449,99 +543,6 @@ function PaymentContent() {
     );
   }
 
-  // ── Step: Paystack ──
-  if (step === "paystack") {
-    return (
-      <div className="min-h-screen bg-ink-950 px-4 py-12 sm:px-6 dark:bg-white">
-        <div className="mx-auto max-w-lg">
-          <div className="text-center">
-            <p className="eyebrow mb-2">Paystack</p>
-            <h1 className="font-display text-3xl text-ink-50 dark:text-ink-950">Pay with Paystack</h1>
-            <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">Pay {priceDisplay} for {selectedPlan.label}</p>
-          </div>
-
-          <div className="mt-8 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-6 text-center">
-            <Landmark className="mx-auto h-12 w-12 text-emerald-400" />
-            <p className="mt-4 font-semibold text-ink-50 dark:text-ink-950">Bank transfer details coming soon</p>
-            <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">
-              {`We're setting up Paystack bank transfer payments. Please check back shortly or use card or crypto payment.`}
-            </p>
-          </div>
-
-          <button onClick={() => setStep("method")} className="mt-6 flex w-full items-center justify-center gap-3 rounded-full bg-gold-400 py-4 text-sm font-semibold text-ink-950 transition hover:bg-gold-300">
-            Choose another method
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Step: Card entry ──
-  if (step === "card") {
-    return (
-      <div className="min-h-screen bg-ink-950 px-4 py-12 sm:px-6 dark:bg-white">
-        <div className="mx-auto max-w-lg">
-          <div className="text-center">
-            <p className="eyebrow mb-2">Secure payment</p>
-            <h1 className="font-display text-3xl text-ink-50 dark:text-ink-950">Enter your card details</h1>
-            <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">Your card will be charged {priceDisplay} for {selectedPlan.label}.</p>
-          </div>
-
-          {profileInfo.name && (
-            <div className="mt-6 flex items-center gap-3 rounded-xl border border-white/10 bg-ink-900/60 p-4 dark:border-ink-200 dark:bg-ink-100/60">
-              <Sparkles className="h-5 w-5 text-gold-400" />
-              <span className="text-sm text-ink-300 dark:text-ink-700">Subscribing to <strong className="text-ink-50 dark:text-ink-950">{profileInfo.name}</strong></span>
-            </div>
-          )}
-
-          <div className="mt-6 rounded-2xl border border-white/10 bg-ink-900/60 p-6 dark:border-ink-200 dark:bg-ink-100/60">
-            <div className="mb-6 flex items-center gap-2">
-              <Lock className="h-4 w-4 text-emerald-400" />
-              <span className="text-xs text-emerald-400">256-bit encrypted</span>
-            </div>
-
-            {error && (
-              <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">{error}</div>
-            )}
-
-            <div className="space-y-4">
-              <div>
-                <label className="mb-1.5 block text-xs text-ink-400 dark:text-ink-600">Cardholder name</label>
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="John Doe" className="w-full rounded-xl border border-white/10 bg-ink-950 px-4 py-3 text-sm text-ink-50 outline-none focus:border-gold-400 dark:border-ink-200 dark:bg-white dark:text-ink-950" required />
-              </div>
-              <div>
-                <label className="mb-1.5 block text-xs text-ink-400 dark:text-ink-600">Card number</label>
-                <input type="text" value={cardNumber} onChange={(e) => setCardNumber(formatCardNumber(e.target.value))} placeholder="4242 4242 4242 4242" className="w-full rounded-xl border border-white/10 bg-ink-950 px-4 py-3 text-sm text-ink-50 outline-none focus:border-gold-400 dark:border-ink-200 dark:bg-white dark:text-ink-950" required />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="mb-1.5 block text-xs text-ink-400 dark:text-ink-600">Expiry date</label>
-                  <input type="text" value={expiry} onChange={(e) => setExpiry(formatExpiry(e.target.value))} placeholder="MM/YY" className="w-full rounded-xl border border-white/10 bg-ink-950 px-4 py-3 text-sm text-ink-50 outline-none focus:border-gold-400 dark:border-ink-200 dark:bg-white dark:text-ink-950" required />
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-xs text-ink-400 dark:text-ink-600">CVC</label>
-                  <input type="text" value={cvc} onChange={(e) => setCvc(e.target.value.replace(/\D/g, "").slice(0, 4))} placeholder="123" className="w-full rounded-xl border border-white/10 bg-ink-950 px-4 py-3 text-sm text-ink-50 outline-none focus:border-gold-400 dark:border-ink-200 dark:bg-white dark:text-ink-950" required />
-                </div>
-              </div>
-            </div>
-
-            <button onClick={handleConfirmPayment} disabled={loading} className="mt-6 flex w-full items-center justify-center gap-3 rounded-full bg-gold-400 py-4 text-sm font-semibold text-ink-950 transition hover:bg-gold-300 disabled:opacity-60">
-              <ShieldCheck className="h-5 w-5" />
-              {loading ? "Processing payment…" : `Pay ${priceDisplay} now`}
-            </button>
-
-            <p className="mt-4 text-center text-xs text-ink-500 dark:text-ink-600">
-              <Lock className="mr-1 inline-block h-3 w-3" />
-              Secured by Stripe
-            </p>
-          </div>
-
-          <button onClick={() => setStep("method")} className="mt-4 block w-full text-center text-sm text-ink-400 hover:text-gold-300 transition dark:text-ink-600">Back</button>
-        </div>
-      </div>
-    );
-  }
-
   // ── Step: Success ──
   return (
     <div className="min-h-screen bg-ink-950 px-4 py-20 sm:px-6 dark:bg-white">
@@ -556,7 +557,7 @@ function PaymentContent() {
         <div className="mt-8 space-y-3 text-left">
           <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-ink-900/60 p-4 dark:border-ink-200 dark:bg-ink-100/60">
             <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
-            <span className="text-sm text-ink-300 dark:text-ink-700">Subscription active for {selectedPlan.duration}</span>
+            <span className="text-sm text-ink-300 dark:text-ink-700">Subscription active for {selectedPlan?.duration}</span>
           </div>
           <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-ink-900/60 p-4 dark:border-ink-200 dark:bg-ink-100/60">
             <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />

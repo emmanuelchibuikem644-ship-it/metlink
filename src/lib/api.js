@@ -1,6 +1,6 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
-const TOKEN_KEY = "kindred_tokens";
+const TOKEN_KEY = "metlink_tokens";
 
 export function getTokens() {
   if (typeof window === "undefined") return null;
@@ -127,11 +127,22 @@ export const api = {
   adminCryptoPayments: () => adminFetch("/core/admin/crypto-payments/"),
   adminCryptoPaymentStatus: (paymentId, status) =>
     adminFetch(`/core/admin/crypto-payments/${paymentId}/status/`, { method: "POST", body: { status } }),
-  // Stripe payments
-  createStripePayment: (creatorId) => apiFetch("/core/stripe/create-payment/", { method: "POST", body: { creator_id: creatorId } }),
-  confirmStripePayment: (paymentIntentId, creatorId) =>
-    apiFetch("/core/stripe/confirm-payment/", { method: "POST", body: { payment_intent_id: paymentIntentId, creator_id: creatorId } }),
-  checkServiceAccess: (creatorId) => apiFetch(`/core/stripe/check-access/${creatorId}/`),
+  // Paystack payments (subscriptions — card + bank transfer)
+  getProfilePrice: (profileId) => apiFetch(`/core/profile-price/${profileId}/`),
+  createPaystackPayment: (profileId, plan, country, currencySymbol) =>
+    apiFetch("/core/paystack/create-payment/", {
+      method: "POST",
+      body: { profile_id: profileId, plan, country, currency_symbol: currencySymbol },
+    }),
+  confirmPaystackPayment: (reference, profileId, plan, country, currencySymbol) =>
+    apiFetch("/core/paystack/confirm-payment/", {
+      method: "POST",
+      body: { reference, profile_id: profileId, plan, country, currency_symbol: currencySymbol },
+    }),
+  adminProfilePrices: () => adminFetch("/core/admin/profile-prices/"),
+  adminUpdateProfilePrice: (profileId, payload) =>
+    adminFetch(`/core/admin/profile-prices/${profileId}/`, { method: "PUT", body: payload }),
+  checkServiceAccess: (creatorId) => apiFetch(`/core/paystack/check-access/${creatorId}/`),
   createServicePayment: (serviceName, amountCents) =>
     apiFetch("/core/stripe/create-service-payment/", { method: "POST", body: { service_name: serviceName, amount_cents: amountCents } }),
   confirmServicePayment: (paymentIntentId) =>

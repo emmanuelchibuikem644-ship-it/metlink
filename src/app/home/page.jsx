@@ -7,6 +7,7 @@ import ProtectedRoute from "../../components/ProtectedRoute";
 import { FaCheckCircle } from "react-icons/fa";
 import { MdLocationOn } from "react-icons/md";
 import allProfiles from "../../data/profiles";
+import { formatPriceCents } from "../../data/currency";
 
 function HomeContent() {
   const { user } = useAuth();
@@ -135,6 +136,11 @@ function HomeContent() {
                   fill
                   className="object-cover"
                 />
+
+                {/* Price badge in profile's local currency */}
+                <div className="absolute bottom-3 left-3 rounded-full bg-ink-950/80 px-4 py-2 text-sm font-semibold text-gold-300 backdrop-blur dark:bg-white/80 dark:text-gold-600">
+                  {formatPriceCents(item.price_cents, item.country)}
+                </div>
 
               </div>
 
