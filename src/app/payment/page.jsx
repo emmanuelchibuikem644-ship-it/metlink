@@ -3,16 +3,47 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { CreditCard, Landmark, ShieldCheck, Sparkles, CheckCircle2, ArrowRight, Bitcoin, Wallet, Copy, ExternalLink } from "lucide-react";
+import { CreditCard, Landmark, ShieldCheck, Sparkles, CheckCircle2, ArrowRight, Bitcoin, Wallet, Copy, ExternalLink, QrCode } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { api } from "../../lib/api";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import { getCountryCurrency, formatPriceCents } from "../../data/currency";
 
 // ── Crypto coins ────────────────────────────────────────────
+// Each coin has a clear deposit title + exact network label.
+// IMPORTANT: These network labels are shown prominently so users never
+// send funds on the wrong blockchain (which would lose their deposit).
 const COINS = [
-  { id: "bitcoin", label: "Bitcoin", symbol: "BTC", color: "#F7931A", network: "Bitcoin (BTC)" },
-  { id: "ethereum", label: "Ethereum", symbol: "ETH", color: "#627EEA", network: "Ethereum (ERC20)" },
-  { id: "tether", label: "Tether", symbol: "USDT", color: "#26A17B", network: "TRON (TRC20)" },
+  {
+    id: "bitcoin",
+    label: "Bitcoin",
+    depositTitle: "BTC Deposit",
+    symbol: "BTC",
+    color: "#F7931A",
+    network: "BTC",
+    networkFull: "Bitcoin (BTC)",
+    networkNote: "Send BTC only on the Bitcoin network.",
+  },
+  {
+    id: "ethereum",
+    label: "Ethereum",
+    depositTitle: "ETH Deposit",
+    symbol: "ETH",
+    color: "#627EEA",
+    network: "Ethereum (ERC20)",
+    networkFull: "Ethereum (ERC20)",
+    networkNote: "Send ETH only on the Ethereum (ERC20) network. Do NOT use another Ethereum network.",
+  },
+  {
+    id: "tether",
+    label: "Tether",
+    depositTitle: "USDT Deposit",
+    symbol: "USDT",
+    color: "#26A17B",
+    network: "TRON (TRC20)",
+    networkFull: "TRON (TRC20)",
+    networkNote: "Send USDT only on the TRON (TRC20) network.",
+  },
 ];
 
 // Wallet addresses
@@ -439,64 +470,39 @@ function PaymentContent() {
     );
   }
 
-  // ── Step: Crypto payment instructions ──
+  // ── Step: Crypto payment instructions (professional deposit page) ──
   if (step === "crypto") {
     const wallet = WALLET_ADDRESSES[selectedCoin.id];
     return (
       <div className="min-h-screen bg-ink-950 px-4 py-12 sm:px-6 dark:bg-white">
         <div className="mx-auto max-w-lg">
+          {/* Header */}
           <div className="text-center">
-            <p className="eyebrow mb-2">Crypto payment</p>
-            <h1 className="font-display text-3xl text-ink-50 dark:text-ink-950">Pay with {selectedCoin.label}</h1>
+            <p className="eyebrow mb-2">Crypto Deposit</p>
+            <h1 className="font-display text-3xl text-ink-50 dark:text-ink-950">{selectedCoin.depositTitle}</h1>
             <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">Send {priceDisplay} ({selectedCoin.symbol}) to the address below</p>
           </div>
 
-          {/* Changelly instructions */}
-          <div className="mt-8 rounded-2xl border border-orange-500/20 bg-orange-500/5 p-6">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-500/10">
-                <Wallet className="h-6 w-6 text-orange-400" />
-              </div>
-              <div>
-                <p className="font-semibold text-ink-50 dark:text-ink-950">Pay with Changelly</p>
-                <p className="text-xs text-ink-400 dark:text-ink-600">Buy crypto and complete your payment</p>
-              </div>
-            </div>
-
-            <ol className="mt-4 space-y-3 text-sm text-ink-300 dark:text-ink-700">
-              <li className="flex gap-3">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-500/20 text-xs font-bold text-orange-400">1</span>
-                <span>Download the <strong className="text-ink-50 dark:text-ink-950">Changelly Exchange. Buy crypto</strong> app.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-500/20 text-xs font-bold text-orange-400">2</span>
-                <span>Buy or deposit <strong className="text-ink-50 dark:text-ink-950">{selectedCoin.symbol}</strong>.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-500/20 text-xs font-bold text-orange-400">3</span>
-                <span>Send <strong className="text-ink-50 dark:text-ink-950">{priceDisplay}</strong> worth of {selectedCoin.symbol} to the wallet address below.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-500/20 text-xs font-bold text-orange-400">4</span>
-                <span>Paste your transaction hash and submit. Subscription activates once confirmed.</span>
-              </li>
-            </ol>
-
-            <a
-              href={`https://changelly.com/buy-crypto?from=USD&to=${selectedCoin.symbol}&address=${wallet}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 flex items-center justify-center gap-2 rounded-full bg-orange-500 py-3 text-sm font-semibold text-white transition hover:bg-orange-400"
-            >
-              Buy {selectedCoin.symbol} with card on Changelly <ExternalLink className="h-4 w-4" />
-            </a>
+          {/* Network — very prominent so users never send on the wrong chain */}
+          <div className="mt-6 rounded-2xl border-2 border-gold-400/40 bg-gold-400/10 p-4 text-center">
+            <p className="text-xs uppercase tracking-widest text-gold-400">Network</p>
+            <p className="mt-1 text-xl font-bold text-ink-50 dark:text-ink-950">{selectedCoin.network}</p>
+            <p className="mt-1 text-xs text-ink-400 dark:text-ink-600">{selectedCoin.networkNote}</p>
           </div>
 
-          {/* Wallet address */}
+          {/* QR Code + Wallet address */}
           <div className="mt-6 rounded-2xl border border-white/10 bg-ink-900/60 p-6 dark:border-ink-200 dark:bg-ink-100/60">
-            <p className="text-xs text-ink-400 dark:text-ink-600">Network</p>
-            <p className="mt-1 text-sm font-semibold text-ink-50 dark:text-ink-950">{selectedCoin.network}</p>
-            <p className="mt-4 text-xs text-ink-400 dark:text-ink-600">Send {selectedCoin.symbol} to this address</p>
+            <div className="flex flex-col items-center">
+              {/* QR Code */}
+              <div className="rounded-2xl bg-white p-4 shadow-lg">
+                <QRCodeSVG value={wallet} size={180} level="M" includeMargin />
+              </div>
+              <p className="mt-3 flex items-center gap-1 text-xs text-ink-400 dark:text-ink-600">
+                <QrCode className="h-3.5 w-3.5" /> Scan to copy the {selectedCoin.symbol} address
+              </p>
+            </div>
+
+            <p className="mt-6 text-xs text-ink-400 dark:text-ink-600">Send {selectedCoin.symbol} to this address</p>
             <div className="mt-3 flex items-center gap-2 rounded-xl border border-white/10 bg-ink-950 p-3 dark:border-ink-200 dark:bg-white">
               <code className="flex-1 break-all text-xs text-ink-300 dark:text-ink-700">{wallet}</code>
               <button
@@ -508,8 +514,30 @@ function PaymentContent() {
               </button>
             </div>
             <p className="mt-3 text-xs text-ink-500 dark:text-ink-600">
-              ⚠️ Only send {selectedCoin.symbol} on the <strong className="text-ink-400 dark:text-ink-500">{selectedCoin.network}</strong> network.
+              ⚠️ Only send {selectedCoin.symbol} on the <strong className="text-ink-400 dark:text-ink-500">{selectedCoin.network}</strong> network. Sending on the wrong network may result in loss of funds.
             </p>
+          </div>
+
+          {/* Changelly instructions */}
+          <div className="mt-6 rounded-2xl border border-orange-500/20 bg-orange-500/5 p-6">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-500/10">
+                <Wallet className="h-6 w-6 text-orange-400" />
+              </div>
+              <div>
+                <p className="font-semibold text-ink-50 dark:text-ink-950">Need {selectedCoin.symbol}?</p>
+                <p className="text-xs text-ink-400 dark:text-ink-600">Buy crypto with a card via Changelly</p>
+              </div>
+            </div>
+
+            <a
+              href={`https://changelly.com/buy-crypto?from=USD&to=${selectedCoin.symbol}&address=${wallet}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 flex items-center justify-center gap-2 rounded-full bg-orange-500 py-3 text-sm font-semibold text-white transition hover:bg-orange-400"
+            >
+              Buy {selectedCoin.symbol} with card on Changelly <ExternalLink className="h-4 w-4" />
+            </a>
           </div>
 
           {/* Transaction hash */}
