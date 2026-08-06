@@ -257,32 +257,28 @@ const profiles = [
     posts: 49,
     price_cents: 20000, // $200
     gallery: [
-      "/WhatsApp Image 2026-07-13 at 3.06.05 PM.jpeg",
-      "/WhatsApp Image 2026-07-13 at 3.06.12 PM.jpeg",
-      "/WhatsApp Image 2026-07-13 at 3.06.13 PM (1).jpeg",
+      "/WhatsApp Image 2026-07-13 at 3.06.06 PM (1).jpeg",
     ],
   },
   {
     id: 13,
-    username: "ella_noir",
-    displayName: "Ella",
+    username: "Melankov",
+    displayName: "Mila",
     verified: true,
     online: true,
     age: 25,
-    city: "Paris",
-    country: "France",
+    city: "London",
+    country: "United kingdom",
     gender: "female",
     orientation: "straight",
-    avatar: "/WhatsApp Image 2026-07-13 at 3.06.06 PM (1).jpeg",
+    avatar: "/WhatsApp Image 2026-08-06 at 11.03.57 AM (1).jpeg",
     cover: "",
     bio: "Parisian girl with a love for fashion and fine wine 🍷",
     followers: "21.7K",
     posts: 104,
-    price_cents: 40000, // $400
+    price_cents: 30000, // $400
     gallery: [
-      "/WhatsApp Image 2026-07-13 at 3.06.06 PM (1).jpeg",
-      "/WhatsApp Image 2026-07-13 at 3.06.13 PM.jpeg",
-      "/WhatsApp Image 2026-07-13 at 3.06.14 PM (1).jpeg",
+      
     ],
   },
   {
@@ -303,9 +299,7 @@ const profiles = [
     posts: 123,
     price_cents: 50000, // $500
     gallery: [
-      "/WhatsApp Image 2026-07-13 at 3.06.06 PM.jpeg",
-      "/WhatsApp Image 2026-07-13 at 3.06.14 PM.jpeg",
-      "/WhatsApp Image 2026-07-13 at 3.06.15 PM.jpeg",
+      "/WhatsApp Image 2026-07-13 at 3.06.07 PM.jpeg",
     ],
   },
   {
@@ -319,39 +313,35 @@ const profiles = [
     country: "Ireland",
     gender: "female",
     orientation: "straight",
-    avatar: "/WhatsApp Image 2026-07-13 at 3.06.07 PM.jpeg",
+    avatar: "/WhatsApp Image 2026-08-06 at 11.03.57 AM (3).jpeg",
     cover: "",
     bio: "Bookworm, tea addict and hopeless romantic 📚",
     followers: "7.5K",
     posts: 27,
-    price_cents: 20000, // $200
+    price_cents: 5000, // $200
     gallery: [
-      "/WhatsApp Image 2026-07-13 at 3.06.07 PM.jpeg",
-      "/WhatsApp Image 2026-07-13 at 3.06.16 PM (1).jpeg",
-      "/WhatsApp Image 2026-07-13 at 3.06.16 PM.jpeg",
+      "/WhatsApp Image 2026-08-06 at 11.03.57 AM (3).jpeg",
     ],
   },
   {
     id: 16,
-    username: "aurora_dawn",
-    displayName: "Aurora",
+    username: "Trapp",
+    displayName: "Emily",
     verified: true,
     online: true,
     age: 24,
-    city: "Oslo",
-    country: "Norway",
+    city: "New york City",
+    country: "United states",
     gender: "female",
     orientation: "straight",
-    avatar: "/WhatsApp Image 2026-07-13 at 3.06.08 PM (1).jpeg",
+    avatar: "/WhatsApp Image 2026-08-06 at 11.03.56 AM (1).jpeg",
     cover: "",
     bio: "Northern lights and northern hearts. Warm and genuine 💛",
     followers: "13.3K",
     posts: 61,
-    price_cents: 30000, // $300
+    price_cents: 35000, // $300
     gallery: [
-      "/WhatsApp Image 2026-07-13 at 3.06.08 PM (1).jpeg",
-      "/WhatsApp Image 2026-07-28 at 5.33.12 PM.jpeg",
-      "/WhatsApp Image 2026-07-28 at 5.34.22 PM.jpeg",
+      "/WhatsApp Image 2026-08-06 at 11.03.56 AM (1).jpeg",
     ],
   },
   {
@@ -372,9 +362,7 @@ const profiles = [
     posts: 88,
     price_cents: 30000, // $300
     gallery: [
-      "/WhatsApp Image 2026-07-13 at 3.06.08 PM.jpeg",
-      "/WhatsApp Image 2026-07-28 at 5.36.28 PM.jpeg",
-      "/WhatsApp Image 2026-07-28 at 5.38.35 PM.jpeg",
+      "/WhatsApp Image 2026-07-13 at 3.06.08 PM (1).jpeg",
     ],
   },
   {
@@ -395,32 +383,28 @@ const profiles = [
     posts: 42,
     price_cents: 20000, // $200
     gallery: [
-      "/WhatsApp Image 2026-07-13 at 3.06.09 PM (1).jpeg",
-      "/WhatsApp Image 2026-07-28 at 5.41.02 PM.jpeg",
-      "/WhatsApp Image 2026-07-28 at 5.46.28 PM.jpeg",
+      "/WhatsApp Image 2026-07-13 at 3.06.09 PM.jpeg",
     ],
   },
   {
     id: 19,
-    username: "stella_maris",
-    displayName: "Stella",
+    username: "epstein",
+    displayName: "gabby",
     verified: true,
     online: true,
     age: 25,
-    city: "Rome",
-    country: "Italy",
+    city: "Vancouver",
+    country: "Canada",
     gender: "female",
     orientation: "straight",
-    avatar: "/WhatsApp Image 2026-07-13 at 3.06.09 PM.jpeg",
+    avatar: "/WhatsApp Image 2026-08-06 at 11.03.56 AM (2).jpeg",
     cover: "",
     bio: "La dolce vita — good food, good wine, good vibes 🍝",
     followers: "17.1K",
     posts: 79,
-    price_cents: 30000, // $300
+    price_cents: 8000, // $80
     gallery: [
-      "/WhatsApp Image 2026-07-13 at 3.06.09 PM.jpeg",
-      "/WhatsApp Image 2026-07-28 at 5.51.16 PM.jpeg",
-      "/WhatsApp Image 2026-07-28 at 6.03.05 PM.jpeg",
+      
     ],
   },
   {
@@ -441,32 +425,28 @@ const profiles = [
     posts: 36,
     price_cents: 20000, // $200
     gallery: [
-      "/WhatsApp Image 2026-07-13 at 3.06.10 PM.jpeg",
-      "/WhatsApp Image 2026-07-29 at 11.47.27 AM.jpeg",
-      "/WhatsApp Image 2026-07-29 at 11.49.25 AM.jpeg",
+      "/WhatsApp Image 2026-07-13 at 3.06.11 PM (1).jpeg",
     ],
   },
   {
     id: 21,
-    username: "nora_june",
-    displayName: "Nora",
+    username: "Brett",
+    displayName: "Jen",
     verified: true,
     online: false,
     age: 27,
-    city: "Stockholm",
-    country: "Sweden",
+    city: "Sydney",
+    country: "Australia",
     gender: "female",
     orientation: "straight",
-    avatar: "/WhatsApp Image 2026-07-13 at 3.06.11 PM (1).jpeg",
+    avatar: "/WhatsApp Image 2026-08-06 at 11.03.55 AM.jpeg",
     cover: "",
     bio: "Minimalist heart with a maximal personality 🤍",
     followers: "12.7K",
     posts: 58,
     price_cents: 30000, // $300
     gallery: [
-      "/WhatsApp Image 2026-07-13 at 3.06.11 PM (1).jpeg",
-      "/WhatsApp Image 2026-07-29 at 11.53.15 AM.jpeg",
-      "/WhatsApp Image 2026-07-29 at 12.02.33 PM.jpeg",
+      "/WhatsApp Image 2026-08-06 at 11.03.55 AM.jpeg",
     ],
   },
   {
@@ -480,7 +460,7 @@ const profiles = [
     country: "Scotland",
     gender: "female",
     orientation: "straight",
-    avatar: "/WhatsApp Image 2026-07-13 at 3.06.11 PM.jpeg",
+    avatar: "/WhatsApp Image 2026-08-06 at 11.03.55 AM (3).jpeg",
     cover: "",
     bio: "Sweet, sassy and a little classy 💁‍♀️",
     followers: "7.2K",
@@ -503,7 +483,7 @@ const profiles = [
     country: "Iceland",
     gender: "female",
     orientation: "straight",
-    avatar: "/WhatsApp Image 2026-07-13 at 3.06.12 PM (1).jpeg",
+    avatar: "/WhatsApp Image 2026-08-06 at 11.03.55 AM (2).jpeg",
     cover: "",
     bio: "Singing my way through life 🎤 Looking for my harmony.",
     followers: "11.9K",
@@ -533,9 +513,8 @@ const profiles = [
     posts: 66,
     price_cents: 30000, // $300
     gallery: [
-      "/WhatsApp Image 2026-07-13 at 3.06.12 PM.jpeg",
-      "/WhatsApp Image 2026-07-13 at 3.06.03 PM (1).jpeg",
-      "/WhatsApp Image 2026-07-13 at 3.06.05 PM (1).jpeg",
+      "/WhatsApp Image 2026-07-13 at 3.06.13 PM (1).jpeg",
+    
     ],
   },
   {
@@ -549,7 +528,7 @@ const profiles = [
     country: "Morocco",
     gender: "female",
     orientation: "straight",
-    avatar: "/WhatsApp Image 2026-07-13 at 3.06.13 PM (1).jpeg",
+    avatar: "/WhatsApp Image 2026-08-06 at 11.03.55 AM (1).jpeg",
     cover: "",
     bio: "Golden hour enthusiast. Warm hearts welcome here ✨",
     followers: "19.6K",
@@ -572,7 +551,7 @@ const profiles = [
     country: "Portugal",
     gender: "female",
     orientation: "straight",
-    avatar: "/WhatsApp Image 2026-07-13 at 3.06.13 PM.jpeg",
+    avatar: "/WhatsApp Image 2026-08-06 at 11.02.13 AM.jpeg",
     cover: "",
     bio: "Fado music, pastel de nata and long walks by the sea 🎶",
     followers: "13.8K",
