@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { CreditCard, Landmark, ShieldCheck, Sparkles, CheckCircle2, ArrowRight, Bitcoin, Wallet, Copy, ExternalLink, QrCode, Repeat } from "lucide-react";
+import { CreditCard, Landmark, ShieldCheck, Sparkles, CheckCircle2, ArrowRight, Bitcoin, Wallet, Copy, ExternalLink, QrCode, Repeat, Coins } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { api } from "../../lib/api";
 import ProtectedRoute from "../../components/ProtectedRoute";
