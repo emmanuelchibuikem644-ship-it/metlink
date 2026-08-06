@@ -513,7 +513,7 @@ const profiles = [
     posts: 66,
     price_cents: 30000, // $300
     gallery: [
-      "/WhatsApp Image 2026-07-13 at 3.06.13 PM (1).jpeg",
+      "/WhatsApp Image 2026-07-13 at 3.06.14 PM.jpeg",
     
     ],
   },
@@ -597,14 +597,14 @@ const profiles = [
     country: "USA",
     gender: "female",
     orientation: "straight",
-    avatar: "/WhatsApp Image 2026-07-13 at 3.06.14 PM.jpeg",
+    avatar: "/WhatsApp Image 2026-07-13 at 3.06.13 PM (1).jpeg",
     cover: "",
     bio: "City lights, Broadway shows and late night talks 🗽",
     followers: "22.3K",
     posts: 107,
     price_cents: 40000, // $400
     gallery: [
-      "/WhatsApp Image 2026-07-13 at 3.06.14 PM.jpeg",
+      "",
       "/WhatsApp Image 2026-07-13 at 3.06.13 PM (1).jpeg",
       "/WhatsApp Image 2026-07-13 at 3.06.15 PM.jpeg",
     ],
