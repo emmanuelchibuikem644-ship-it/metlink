@@ -23,9 +23,7 @@ const profiles = [
     posts: 84,
     price_cents: 20000, // $200
     gallery: [
-      "/WhatsApp Image 2026-07-12 at 5.58.59 AM.jpeg",
-      "/WhatsApp Image 2026-07-12 at 5.59.00 AM.jpeg",
-      "/WhatsApp Image 2026-07-13 at 3.05.59 PM.jpeg",
+      "/WhatsApp Image 2026-07-12 at 5.59.00 AM.jpeg"
     ],
   },
   {
@@ -90,9 +88,7 @@ const profiles = [
     posts: 45,
     price_cents: 20000, // $200
     gallery: [
-      "/WhatsApp Image 2026-07-13 at 3.06.01 PM (1).jpeg",
-      "/WhatsApp Image 2026-07-13 at 3.06.03 PM (1).jpeg",
-      "/WhatsApp Image 2026-07-13 at 3.06.03 PM.jpeg",
+     "/WhatsApp Image 2026-07-13 at 3.06.01 PM.jpeg"
     ],
   },
   {
