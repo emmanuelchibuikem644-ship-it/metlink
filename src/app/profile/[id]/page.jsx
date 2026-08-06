@@ -205,18 +205,23 @@ function ProfileContent({ profileId }) {
                       }
                     }}
                     className={`group relative aspect-square overflow-hidden rounded-xl border-subtle ${isLocked ? "cursor-pointer" : "cursor-zoom-in"}`}
-                  >
-                    <Image src={photo} alt={`${profile.displayName} photo ${idx + 1}`} fill className="object-cover transition duration-300 group-hover:scale-105" />
+                    >
+                      <Image 
+                        src={photo} 
+                        alt={`${profile.displayName} photo ${idx + 1}`} 
+                        fill 
+                        className={`object-cover transition duration-300 group-hover:scale-105 ${isLocked ? "blur-xl" : ""}`} 
+                      />
 
-                    {isLocked && (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-ink-950/40 transition group-hover:bg-ink-950/60">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gold-400/90 shadow-lg">
-                          <Lock className="h-6 w-6 text-ink-950" />
+                      {isLocked && (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-ink-950/60 transition group-hover:bg-ink-950/80 backdrop-blur-sm">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gold-400/90 shadow-lg">
+                            <Lock className="h-6 w-6 text-ink-950" />
+                          </div>
+                          <span className="mt-2 text-xs font-semibold text-white">Premium</span>
                         </div>
-                        <span className="mt-2 text-xs font-semibold text-white">Premium</span>
-                      </div>
-                    )}
-                  </div>
+                      )}
+                    </div>
                 );
               })}
             </div>

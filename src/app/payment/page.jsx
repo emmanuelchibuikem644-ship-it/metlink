@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { CreditCard, Landmark, ShieldCheck, Sparkles, CheckCircle2, ArrowRight, Bitcoin, Wallet, Copy, ExternalLink, QrCode } from "lucide-react";
+import { CreditCard, Landmark, ShieldCheck, Sparkles, CheckCircle2, ArrowRight, Bitcoin, Wallet, Copy, ExternalLink, QrCode, Repeat } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { api } from "../../lib/api";
 import ProtectedRoute from "../../components/ProtectedRoute";
@@ -92,6 +92,14 @@ function PaymentContent() {
           priceDisplay: formatPriceCents(profilePrice.recurring_monthly_price_cents, profileInfo.country),
           duration: "1 month",
           popular: true,
+        },
+        {
+          id: "year",
+          label: "1 Year",
+          priceCents: profilePrice.recurring_yearly_price_cents,
+          priceDisplay: formatPriceCents(profilePrice.recurring_yearly_price_cents, profileInfo.country),
+          duration: "1 year",
+          save: true,
         },
       ]
     : [];
@@ -311,6 +319,11 @@ function PaymentContent() {
                     Popular
                   </span>
                 )}
+                {plan.save && (
+                  <span className="absolute -top-3 right-6 rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white">
+                    Save 20%
+                  </span>
+                )}
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-lg font-semibold text-ink-50 dark:text-ink-950">{plan.label}</p>
@@ -444,7 +457,9 @@ function PaymentContent() {
                 }`}
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl" style={{ backgroundColor: `${coin.color}20` }}>
-                  <Bitcoin className="h-6 w-6" style={{ color: coin.color }} />
+                  {coin.id === "bitcoin" && <Bitcoin className="h-6 w-6" style={{ color: coin.color }} />}
+                  {coin.id === "ethereum" && <Coins className="h-6 w-6" style={{ color: coin.color }} />}
+                  {coin.id === "tether" && <Repeat className="h-6 w-6" style={{ color: coin.color }} />}
                 </div>
                 <div className="flex-1">
                   <p className="font-semibold text-ink-50 dark:text-ink-950">{coin.label}</p>

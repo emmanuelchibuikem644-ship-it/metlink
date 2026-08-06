@@ -66,6 +66,7 @@ export default function PricingPage() {
             className={`card flex flex-col ${plan.code === "premium-yearly" ? "border-gold-400/50 shadow-glow" : ""}`}
           >
             {plan.code === "premium-yearly" && <span className="eyebrow mb-3">Best value</span>}
+            {plan.code === "premium-year" && <span className="eyebrow mb-3">Save 20%</span>}
             <h2 className="font-display text-2xl italic text-ink-50">{plan.name}</h2>
             <p className="mt-4">
               <span className="font-display text-4xl text-gold-300">{plan.price_display}</span>
