@@ -29,6 +29,14 @@ function HomeContent() {
     );
   }
 
+  if (orientation === "bisexual") {
+    // Show only bisexual profiles (both male and female)
+    return allProfiles.filter(
+      (profile) =>
+        profile.orientation.toLowerCase() === "bisexual"
+    );
+  }
+
   // Show only straight female profiles
   return allProfiles.filter(
     (profile) =>

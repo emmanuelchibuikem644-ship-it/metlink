@@ -115,6 +115,7 @@ export default function SignupPage() {
             <option value="" disabled>Select your preference</option>
             <option value="straight">Straight</option>
             <option value="gay">Gay</option>
+            <option value="bisexual">Bisexual</option>
           </select>
         </div>
 
