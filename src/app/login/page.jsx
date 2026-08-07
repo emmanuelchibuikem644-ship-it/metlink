@@ -73,7 +73,7 @@ export default function LoginPage() {
       </form>
 
       <p className="mt-6 text-center text-sm text-ink-400 dark:text-ink-600">
-        New to Kindred?{" "}
+        New to Meetlink?{" "}
         <Link href="/signup" className="text-gold-400 hover:text-gold-300 transition">Create an account</Link>
       </p>
     </section>
