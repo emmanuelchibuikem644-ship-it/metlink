@@ -11,9 +11,9 @@ const profiles = [
     displayName: "Isabella",
     verified: true,
     online: true,
-    age: 24,
-    city: "Sydney",
-    country: "Australia",
+    age: 26,
+    city: "Tirana",
+    country: "Albania",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-12 at 5.58.59 AM.jpeg",
@@ -21,7 +21,7 @@ const profiles = [
     bio: "✨ Hey love, I'm Isabella. Friendly, elegant and loves meeting new people.",
     followers: "12.1K",
     posts: 84,
-    price_cents: 20000, // $200
+    price_cents: 40000, // $200
     gallery: [
       "/WhatsApp Image 2026-07-12 at 5.58.59 AM.jpeg",
       "/WhatsApp Image 2026-07-12 at 5.59.00 AM.jpeg",
@@ -274,12 +274,12 @@ const profiles = [
   {
     id: 3,
     username: "mia_rose",
-    displayName: "Mia",
+    displayName: "Jamiie Lynn",
     verified: true,
     online: true,
     age: 27,
-    city: "Toronto",
-    country: "Canada",
+    city: "Durrës",
+    country: "Albania",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-13 at 3.05.59 PM.jpeg",
@@ -287,7 +287,7 @@ const profiles = [
     bio: "Hey guys, I'm Mia. Loves to eat and having a good laugh.",
     followers: "12K",
     posts: 50,
-    price_cents: 20000, // $200
+    price_cents: 40000, // $200
     gallery: [
       "/WhatsApp Image 2026-07-13 at 3.05.59 PM.jpeg",
       "/WhatsApp Image 2026-07-13 at 3.05.59 PM.jpeg",
@@ -359,11 +359,11 @@ const profiles = [
   {
     id: 4,
     username: "sofia_luna",
-    displayName: "Sofia",
+    displayName: "Jamiie Lynn",
     verified: true,
     online: true,
     age: 24,
-    city: "Córdoba",
+    city: "Buenos Aires",
     country: "Argentina",
     gender: "female",
     orientation: "straight",
@@ -372,7 +372,7 @@ const profiles = [
     bio: "Always smiling and enjoys meaningful conversations.",
     followers: "8K",
     posts: 45,
-    price_cents: 20000, // $200
+    price_cents: 45000, // $200
     gallery: [
       "/WhatsApp Image 2026-07-13 at 3.06.01 PM (1).jpeg",
       "/WhatsApp Image 2026-07-13 at 3.06.01 PM.jpeg",
@@ -851,12 +851,12 @@ const profiles = [
   {
     id: 8,
     username: "emma_blue",
-    displayName: "Emma",
+    displayName: "Morgan lanes",
     verified: true,
     online: true,
     age: 30,
-    city: "Austin",
-    country: "USA",
+    city: "Berlin and Munich",
+    country: "Germany",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-13 at 3.06.03 PM (1).jpeg",
@@ -864,7 +864,7 @@ const profiles = [
     bio: "Music, art and deep conversations. Looking for my person 🎶",
     followers: "9.8K",
     posts: 38,
-    price_cents: 20000, // $200
+    price_cents: 45000, // $200
     gallery: [
       "/WhatsApp Image 2026-07-13 at 3.06.03 PM (1).jpeg",
       "/WhatsApp Image 2026-07-13 at 3.06.03 PM.jpeg",
@@ -1018,8 +1018,8 @@ const profiles = [
     verified: true,
     online: true,
     age: 27,
-    city: "Melbourne",
-    country: "Australia",
+    city: "Paris and Marseille",
+    country: "France",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-13 at 3.06.05 PM (1).jpeg",
@@ -1027,7 +1027,7 @@ const profiles = [
     bio: "Adventurous soul. Hiking, good food and great company 🏔️",
     followers: "14.6K",
     posts: 73,
-    price_cents: 30000, // $300
+    price_cents: 40000, // $300
     gallery: [
       "/WhatsApp Image 2026-07-13 at 3.06.05 PM (1).jpeg",
       "/WhatsApp Image 2026-07-13 at 3.06.05 PM (2).jpeg",
@@ -1188,12 +1188,12 @@ const profiles = [
   {
     id: 12,
     username: "ruby_james",
-    displayName: "Ruby",
+    displayName: "Anast Angel",
     verified: true,
     online: false,
     age: 26,
-    city: "Birmingham",
-    country: "United Kingdom",
+    city: "Toronto and Montreal",
+    country: "Canada",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-13 at 3.06.05 PM.jpeg",
@@ -1201,7 +1201,7 @@ const profiles = [
     bio: "Professional daydreamer. Sarcasm included for free 😏",
     followers: "10.4K",
     posts: 49,
-    price_cents: 20000, // $200
+    price_cents: 40000, // $200
     gallery: [
       "/WhatsApp Image 2026-07-13 at 3.06.05 PM.jpeg",
       "/WhatsApp Image 2026-07-13 at 3.06.06 PM (1).jpeg",
@@ -1415,8 +1415,8 @@ const profiles = [
     verified: true,
     online: true,
     age: 28,
-    city: "Los Angeles",
-    country: "USA",
+    city: "Phnom Penh, Siem Reap",
+    country: "Cambodia",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-13 at 3.06.06 PM.jpeg",
@@ -1424,7 +1424,7 @@ const profiles = [
     bio: "Confident, ambitious and ready to mingle 🔥",
     followers: "28.9K",
     posts: 123,
-    price_cents: 50000, // $500
+    price_cents: 30000, // $500
     gallery: [
       "/WhatsApp Image 2026-07-13 at 3.06.06 PM.jpeg",
       "/WhatsApp Image 2026-07-13 at 3.06.07 PM.jpeg",
@@ -1727,12 +1727,12 @@ const profiles = [
   {
     id: 17,
     username: "hazel_wink",
-    displayName: "Hazel",
+    displayName: "Izzy marshal",
     verified: true,
     online: true,
     age: 26,
-    city: "Vancouver",
-    country: "Canada",
+    city: "São Paulo and Rio de Janeiro",
+    country: "Brazil",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-13 at 3.06.08 PM.jpeg",
@@ -1850,12 +1850,12 @@ const profiles = [
   {
     id: 18,
     username: "luna_moon",
-    displayName: "Luna",
+    displayName: "Nichole",
     verified: true,
     online: false,
     age: 23,
-    city: "Madrid",
-    country: "Spain",
+    city: "Brussels and Antwerp",
+    country: "Belgium",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-13 at 3.06.09 PM (1).jpeg",
@@ -1863,7 +1863,7 @@ const profiles = [
     bio: "Dancing through life one paso at a time 💃",
     followers: "9.2K",
     posts: 42,
-    price_cents: 20000, // $200
+    price_cents: 40000, // $200
     gallery: [
       "/WhatsApp Image 2026-07-13 at 3.06.09 PM (1).jpeg",
       "/WhatsApp Image 2026-07-13 at 3.06.09 PM.jpeg",
@@ -2045,8 +2045,8 @@ const profiles = [
     verified: true,
     online: true,
     age: 24,
-    city: "Portland",
-    country: "USA",
+    city: "Vienna and Graz",
+    country: "Austria",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-13 at 3.06.10 PM.jpeg",
@@ -2054,7 +2054,7 @@ const profiles = [
     bio: "Plants, coffee and cozy vibes. Let's grow together 🌱",
     followers: "8.8K",
     posts: 36,
-    price_cents: 20000, // $200
+    price_cents: 40000, // $200
     gallery: [
       "/WhatsApp Image 2026-07-13 at 3.06.10 PM.jpeg",
       "/WhatsApp Image 2026-07-13 at 3.06.11 PM (1).jpeg",
@@ -2204,13 +2204,13 @@ const profiles = [
   },
   {
     id: 22,
-    username: "hannah_joy",
-    displayName: "Hannah",
+    username: "babymaryam",
+    displayName: "babymaryam",     
     verified: true,
     online: true,
     age: 23,
-    city: "Glasgow",
-    country: "Scotland",
+    city: "Zürich",
+    country: "Switzerland",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-08-06 at 11.03.55 AM (3).jpeg",
@@ -2364,8 +2364,8 @@ const profiles = [
     verified: true,
     online: false,
     age: 25,
-    city: "Nice",
-    country: "France",
+    city: "Córdoba",
+    country: "Argentina",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-13 at 3.06.12 PM.jpeg",
@@ -2373,7 +2373,7 @@ const profiles = [
     bio: "Sun, sea and good company. Côte d'Azur girl 🌊",
     followers: "14.4K",
     posts: 66,
-    price_cents: 30000, // $300
+    price_cents: 45000, // $300
     gallery: [
       "/WhatsApp Image 2026-07-13 at 3.06.12 PM.jpeg",
       "/WhatsApp Image 2026-07-13 at 3.06.14 PM.jpeg",
@@ -2688,8 +2688,8 @@ const profiles = [
     verified: true,
     online: false,
     age: 23,
-    city: "Cape Town",
-    country: "South Africa",
+    city: "Sydney",
+    country: "Australia",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-13 at 3.06.14 PM (1).jpeg",
@@ -2697,7 +2697,7 @@ const profiles = [
     bio: "Table Mountain views and big dreams 🏔️",
     followers: "10.1K",
     posts: 47,
-    price_cents: 20000, // $200
+    price_cents: 50000, // $200
     gallery: [
       "/WhatsApp Image 2026-07-13 at 3.06.14 PM (1).jpeg",
       "/WhatsApp Image 2026-07-13 at 3.06.11 PM (1).jpeg",
@@ -2766,12 +2766,12 @@ const profiles = [
   {
     id: 28,
     username: "penny_lane",
-    displayName: "Penny",
+    displayName: "Casta Olivia",
     verified: true,
     online: true,
     age: 25,
-    city: "New York",
-    country: "USA",
+    city: "Melbourne",
+    country: "Australia",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-13 at 3.06.13 PM (1).jpeg",
@@ -3167,12 +3167,12 @@ const profiles = [
   {
     id: 32,
     username: "tessa_bay",
-    displayName: "Tessa",
+    displayName: "Lara",
     verified: true,
     online: true,
     age: 23,
-    city: "San Diego",
-    country: "USA",
+    city: "Zürich",
+    country: "Switzerland",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-28 at 5.33.12 PM.jpeg",
@@ -3180,7 +3180,7 @@ const profiles = [
     bio: "Beach days, sunsets and good surf 🏄‍♀️",
     followers: "12.6K",
     posts: 56,
-    price_cents: 20000, // $200
+    price_cents: 35000, // $200
     gallery: [
       "/WhatsApp Image 2026-07-28 at 5.33.12 PM.jpeg",
       "/WhatsApp Image 2026-07-28 at 5.34.22 PM.jpeg",
@@ -3258,12 +3258,12 @@ const profiles = [
   {
     id: 33,
     username: "uma_soul",
-    displayName: "Uma",
+    displayName: "Beatriz",
     verified: true,
     online: false,
     age: 28,
-    city: "Singapore",
-    country: "Singapore",
+    city: "Lisbon",
+    country: "Portugal",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-28 at 5.34.22 PM.jpeg",
@@ -3341,12 +3341,12 @@ const profiles = [
   {
     id: 34,
     username: "vera_vogue",
-    displayName: "Vera",
+    displayName: "Elsa",
     verified: true,
     online: true,
     age: 25,
-    city: "Milan",
-    country: "Italy",
+    city: "Stockholm and Gothenburg",
+    country: "Sweden",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-28 at 5.36.28 PM.jpeg",
@@ -3472,12 +3472,12 @@ const profiles = [
   {
     id: 35,
     username: "willow_wisp",
-    displayName: "Willow",
+    displayName: "Elly Clutch",
     verified: true,
     online: true,
     age: 24,
-    city: "Seattle",
-    country: "USA",
+    city: "Moscow and Saint Petersburg",
+    country: "Russia",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-28 at 5.38.35 PM.jpeg",
@@ -3485,7 +3485,7 @@ const profiles = [
     bio: "Rainy days, cozy corners and good books 🌧️📚",
     followers: "7.8K",
     posts: 35,
-    price_cents: 20000, // $200
+    price_cents: 45000, // $200
     gallery: [
       "/WhatsApp Image 2026-07-28 at 5.38.35 PM.jpeg",
       "/WhatsApp Image 2026-07-28 at 6.03.05 PM.jpeg",
@@ -3542,12 +3542,12 @@ const profiles = [
   {
     id: 36,
     username: "yara_glow",
-    displayName: "Yara",
+    displayName: "María",
     verified: true,
     online: false,
     age: 26,
-    city: "Beirut",
-    country: "Lebanon",
+    city: "Madrid and Barcelona",
+    country: "Spain",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-28 at 5.41.02 PM.jpeg",
@@ -3555,7 +3555,7 @@ const profiles = [
     bio: "Mediterranean warmth and city energy 💛",
     followers: "13.4K",
     posts: 63,
-    price_cents: 30000, // $300
+    price_cents: 35000, // $300
     gallery: [
       "/WhatsApp Image 2026-07-28 at 5.41.02 PM.jpeg",
       "/WhatsApp Image 2026-07-28 at 5.33.12 PM.jpeg",
@@ -3640,12 +3640,12 @@ const profiles = [
   {
     id: 37,
     username: "zara_star",
-    displayName: "Zara",
+    displayName: "Meg",
     verified: true,
     online: true,
     age: 23,
-    city: "Doha",
-    country: "Qatar",
+    city: "Valletta and Birkirkara",
+    country: "Malta",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-28 at 5.46.28 PM.jpeg",
@@ -3653,7 +3653,7 @@ const profiles = [
     bio: "Desert rose with big city dreams 🌹",
     followers: "16.7K",
     posts: 82,
-    price_cents: 30000, // $300
+    price_cents: 35000, // $300
     gallery: [
       "/WhatsApp Image 2026-07-28 at 5.46.28 PM.jpeg",
       "/WhatsApp Image 2026-07-28 at 5.36.28 PM.jpeg",
@@ -3757,12 +3757,12 @@ const profiles = [
   {
     id: 38,
     username: "freya_north",
-    displayName: "Freya 2",
+    displayName: "Sonia",
     verified: true,
     online: true,
     age: 27,
-    city: "Copenhagen",
-    country: "Denmark",
+    city: "Istanbul, Ankara",
+    country: "Turkey",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-28 at 5.51.16 PM.jpeg",
@@ -3770,7 +3770,7 @@ const profiles = [
     bio: "Nordic calm with a wild heart 🧊",
     followers: "11.5K",
     posts: 54,
-    price_cents: 20000, // $200
+    price_cents: 35000, // $200
     gallery: [
       "/WhatsApp Image 2026-07-28 at 5.51.16 PM.jpeg",
       "/WhatsApp Image 2026-07-28 at 5.41.02 PM.jpeg",
@@ -3846,12 +3846,12 @@ const profiles = [
   {
     id: 39,
     username: "gemma_stone",
-    displayName: "Gemma",
+    displayName: "Tiana",
     verified: true,
     online: false,
     age: 25,
-    city: "Leeds",
-    country: "United Kingdom",
+    city: "Malé and Addu City",
+    country: "Maldives",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-28 at 6.03.05 PM.jpeg",
@@ -3859,7 +3859,7 @@ const profiles = [
     bio: "Northern lass with a big laugh 😄",
     followers: "6.6K",
     posts: 29,
-    price_cents: 20000, // $200
+    price_cents: 35000, // $200
     gallery: [
       "/WhatsApp Image 2026-07-28 at 6.03.05 PM.jpeg",
       "/WhatsApp Image 2026-07-28 at 5.51.16 PM.jpeg",
@@ -3910,12 +3910,12 @@ const profiles = [
   {
     id: 40,
     username: "holly_berry",
-    displayName: "Holly",
+    displayName: "Tracy",
     verified: true,
     online: true,
     age: 24,
-    city: "Bristol",
-    country: "United Kingdom",
+    city: "Kuala Lumpur and George Town",
+    country: "Malaysia",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-29 at 11.47.27 AM.jpeg",
@@ -3923,7 +3923,7 @@ const profiles = [
     bio: "Craft beer, street food and live music 🍻🎸",
     followers: "9.3K",
     posts: 41,
-    price_cents: 20000, // $200
+    price_cents: 30000, // $200
     gallery: [
       "/WhatsApp Image 2026-07-29 at 11.47.27 AM.jpeg",
       "/WhatsApp Image 2026-07-29 at 11.49.25 AM.jpeg",
@@ -3986,12 +3986,12 @@ const profiles = [
   {
     id: 41,
     username: "iris_blue",
-    displayName: "Iris",
+    displayName: "Elena",
     verified: true,
     online: true,
     age: 26,
-    city: "Amsterdam",
-    country: "Netherlands",
+    city: "Athens and Thessaloniki",
+    country: "Greece",
     gender: "female",
     orientation: "straight",
     avatar: "/WhatsApp Image 2026-07-29 at 11.49.25 AM.jpeg",
@@ -3999,7 +3999,7 @@ const profiles = [
     bio: "Cycling through life with a tulip smile 🌷",
     followers: "12.2K",
     posts: 57,
-    price_cents: 30000, // $300
+    price_cents: 37000, // $300
     gallery: [
       "/WhatsApp Image 2026-07-29 at 11.49.25 AM.jpeg",
       "/WhatsApp Image 2026-07-29 at 12.02.33 PM.jpeg",

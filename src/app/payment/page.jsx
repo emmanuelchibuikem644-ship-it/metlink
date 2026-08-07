@@ -209,9 +209,11 @@ function PaymentContent() {
     setLoading(true);
     setError("");
     try {
+      // Crypto pays the INITIAL unlock fee (one-time), not the recurring amount
+      const initialCents = profilePrice ? profilePrice.initial_price_cents : 0;
       const res = await api.createCryptoPayment({
         coin: selectedCoin.id,
-        amount_cents: selectedPlan.priceCents,
+        amount_cents: initialCents,
         purpose: `subscription-${selectedPlan.id}-${profileInfo.name}`,
         wallet_address: WALLET_ADDRESSES[selectedCoin.id],
       });
@@ -432,13 +434,14 @@ function PaymentContent() {
 
   // ── Step: Crypto coin selection ──
   if (step === "crypto-select") {
+    const cryptoPriceDisplay = profilePrice ? formatPriceCents(profilePrice.initial_price_cents, profileInfo.country) : "";
     return (
       <div className="min-h-screen bg-ink-950 px-4 py-12 sm:px-6 dark:bg-white">
         <div className="mx-auto max-w-lg">
           <div className="text-center">
             <p className="eyebrow mb-2">Crypto payment</p>
             <h1 className="font-display text-3xl text-ink-50 dark:text-ink-950">Select your coin</h1>
-            <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">Pay {priceDisplay} for {selectedPlan.label} using crypto</p>
+            <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">Pay {cryptoPriceDisplay} one-time unlock fee using crypto</p>
           </div>
 
           {error && (
@@ -470,14 +473,14 @@ function PaymentContent() {
             ))}
           </div>
 
-          <button
-            onClick={handleCreateCryptoPayment}
-            disabled={loading}
-            className="mt-6 flex w-full items-center justify-center gap-3 rounded-full bg-gold-400 py-4 text-sm font-semibold text-ink-950 transition hover:bg-gold-300 disabled:opacity-60"
-          >
-            <Bitcoin className="h-5 w-5" />
-            {loading ? "Preparing…" : `Pay ${priceDisplay} with ${selectedCoin.symbol}`}
-          </button>
+            <button
+              onClick={handleCreateCryptoPayment}
+              disabled={loading}
+              className="mt-6 flex w-full items-center justify-center gap-3 rounded-full bg-gold-400 py-4 text-sm font-semibold text-ink-950 transition hover:bg-gold-300 disabled:opacity-60"
+            >
+              <Bitcoin className="h-5 w-5" />
+              {loading ? "Preparing…" : `Pay ${cryptoPriceDisplay} with ${selectedCoin.symbol}`}
+            </button>
 
           <button onClick={() => setStep("method")} className="mt-4 block w-full text-center text-sm text-ink-400 hover:text-gold-300 transition dark:text-ink-600">Back</button>
         </div>
@@ -488,6 +491,7 @@ function PaymentContent() {
   // ── Step: Crypto payment instructions (professional deposit page) ──
   if (step === "crypto") {
     const wallet = WALLET_ADDRESSES[selectedCoin.id];
+    const cryptoPriceDisplay = profilePrice ? formatPriceCents(profilePrice.initial_price_cents, profileInfo.country) : "";
     return (
       <div className="min-h-screen bg-ink-950 px-4 py-12 sm:px-6 dark:bg-white">
         <div className="mx-auto max-w-lg">
@@ -495,7 +499,7 @@ function PaymentContent() {
           <div className="text-center">
             <p className="eyebrow mb-2">Crypto Deposit</p>
             <h1 className="font-display text-3xl text-ink-50 dark:text-ink-950">{selectedCoin.depositTitle}</h1>
-            <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">Send {priceDisplay} ({selectedCoin.symbol}) to the address below</p>
+            <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">Send {cryptoPriceDisplay} one-time unlock fee ({selectedCoin.symbol}) to the address below</p>
           </div>
 
           {/* Network — very prominent so users never send on the wrong chain */}
