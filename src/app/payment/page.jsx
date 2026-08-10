@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { CreditCard, Landmark, ShieldCheck, Sparkles, CheckCircle2, ArrowRight, Bitcoin, Wallet, Copy, ExternalLink, QrCode, Repeat, Coins } from "lucide-react";
+import { CreditCard, Landmark, ShieldCheck, Sparkles, CheckCircle2, ArrowRight, Wallet, Copy, ExternalLink, QrCode, Globe } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { api } from "../../lib/api";
 import ProtectedRoute from "../../components/ProtectedRoute";
@@ -16,10 +16,12 @@ import { getCountryCurrency, formatPriceCents } from "../../data/currency";
 const COINS = [
   {
     id: "bitcoin",
-    label: "Bitcoin",
+    label: "BTC",
+    fullName: "Bitcoin",
     depositTitle: "BTC Deposit",
     symbol: "BTC",
     color: "#F7931A",
+    logo: "https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa5/svg/color/btc.svg",
     network: "BTC",
     networkFull: "Bitcoin (BTC)",
     networkNote: "Send BTC only on the Bitcoin network.",
@@ -27,19 +29,23 @@ const COINS = [
   {
     id: "ethereum",
     label: "Ethereum",
+    fullName: "Ethereum",
     depositTitle: "ETH Deposit",
     symbol: "ETH",
     color: "#627EEA",
+    logo: "https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa5/svg/color/eth.svg",
     network: "Ethereum (ERC20)",
     networkFull: "Ethereum (ERC20)",
     networkNote: "Send ETH only on the Ethereum (ERC20) network. Do NOT use another Ethereum network.",
   },
   {
-    id: "tether",
-    label: "Tether",
+    id: "usdt",
+    label: "USDT",
+    fullName: "Tether (USDT)",
     depositTitle: "USDT Deposit",
     symbol: "USDT",
     color: "#26A17B",
+    logo: "https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa5/svg/color/usdt.svg",
     network: "TRON (TRC20)",
     networkFull: "TRON (TRC20)",
     networkNote: "Send USDT only on the TRON (TRC20) network.",
@@ -50,8 +56,19 @@ const COINS = [
 const WALLET_ADDRESSES = {
   bitcoin: "13mrBR4n1BtPJwMGoNVRKn8RvFMcGGk9Xa",
   ethereum: "0xf67ba3b4d1b0ad9cb07c18446cdeba130cbfbd22",
-  tether: "TDBXXkAbmU453Bn9t4Hj9n5yDCcAEN9WxB",
+  usdt: "TDBXXkAbmU453Bn9t4Hj9n5yDCcAEN9WxB",
 };
+
+// ── Bank transfer currencies (Paystack-supported) ──────────
+const TRANSFER_CURRENCIES = [
+  { code: "USD", label: "US Dollar", symbol: "$", flag: "🇺🇸" },
+  { code: "EUR", label: "Euro", symbol: "€", flag: "🇪🇺" },
+  { code: "GBP", label: "British Pound", symbol: "£", flag: "🇬🇧" },
+  { code: "NGN", label: "Nigerian Naira", symbol: "₦", flag: "🇳🇬" },
+  { code: "GHS", label: "Ghanaian Cedi", symbol: "₵", flag: "🇬🇭" },
+  { code: "KES", label: "Kenyan Shilling", symbol: "KSh", flag: "🇰🇪" },
+  { code: "ZAR", label: "South African Rand", symbol: "R", flag: "🇿🇦" },
+];
 
 function PaymentContent() {
   const router = useRouter();
@@ -135,9 +152,10 @@ function PaymentContent() {
       .finally(() => setPriceLoading(false));
   }, [profileInfo.id, profileInfo.country]);
 
-  const [step, setStep] = useState("plan"); // plan → method → paystack | crypto-select | crypto → success
+  const [step, setStep] = useState("plan"); // plan → method → transfer-currency | paystack | crypto-select | crypto → success
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [selectedCoin, setSelectedCoin] = useState(COINS[0]);
+  const [selectedTransferCurrency, setSelectedTransferCurrency] = useState(TRANSFER_CURRENCIES[0]);
   const [txHash, setTxHash] = useState("");
   const [copied, setCopied] = useState(false);
 
@@ -158,7 +176,7 @@ function PaymentContent() {
 
   function handleGoToServices() { router.push("/service"); }
 
-  // ── Paystack: initialize a transaction (card + bank transfer) ──
+  // ── Paystack: initialize a transaction (card) ──
   async function handlePaystackPayment() {
     if (!profileInfo.id || !selectedPlan) return;
     setLoading(true);
@@ -171,7 +189,30 @@ function PaymentContent() {
         currencySymbol
       );
       setPaystackData(res);
-      // Redirect to Paystack's hosted checkout (card, bank transfer, etc.)
+      // Redirect to Paystack's hosted checkout (card)
+      window.location.href = res.authorization_url;
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  }
+
+  // ── Paystack: bank transfer in user-selected currency ──
+  async function handleBankTransfer() {
+    if (!profileInfo.id || !selectedPlan || !selectedTransferCurrency) return;
+    setLoading(true);
+    setError("");
+    try {
+      const res = await api.createPaystackTransfer(
+        profileInfo.id,
+        selectedPlan.id,
+        profileInfo.country,
+        selectedTransferCurrency.code,
+        selectedTransferCurrency.symbol
+      );
+      setPaystackData(res);
+      // Redirect to Paystack's hosted checkout — Paystack shows the
+      // bank account in the user-selected currency (USD, EUR, GBP, etc.)
       window.location.href = res.authorization_url;
     } catch (err) {
       setError(err.message);
@@ -374,7 +415,7 @@ function PaymentContent() {
           )}
 
           <div className="mt-8 space-y-4">
-            {/* Paystack (card + bank transfer) */}
+            {/* Paystack card payment */}
             <button
               onClick={handlePaystackPayment}
               disabled={loading}
@@ -384,15 +425,15 @@ function PaymentContent() {
                 <CreditCard className="h-6 w-6 text-gold-400" />
               </div>
               <div className="flex-1">
-                <p className="font-semibold text-ink-50 dark:text-ink-950">Card / Bank Transfer</p>
-                <p className="text-xs text-ink-400 dark:text-ink-600">Pay securely with Paystack (Visa, Mastercard, bank transfer)</p>
+                <p className="font-semibold text-ink-50 dark:text-ink-950">Card Payment</p>
+                <p className="text-xs text-ink-400 dark:text-ink-600">Pay securely with Paystack (Visa, Mastercard)</p>
               </div>
               <ArrowRight className="h-5 w-5 text-ink-500" />
             </button>
 
-            {/* Paystack bank transfer */}
+            {/* Paystack bank transfer — choose currency first */}
             <button
-              onClick={handlePaystackPayment}
+              onClick={() => setStep("transfer-currency")}
               disabled={loading}
               className="flex w-full items-center gap-4 rounded-2xl border border-white/10 bg-ink-900/60 p-5 text-left transition hover:border-gold-400/30 dark:border-ink-200 dark:bg-ink-100/60"
             >
@@ -401,7 +442,7 @@ function PaymentContent() {
               </div>
               <div className="flex-1">
                 <p className="font-semibold text-ink-50 dark:text-ink-950">Bank Transfer</p>
-                <p className="text-xs text-ink-400 dark:text-ink-600">Pay via bank transfer through Paystack</p>
+                <p className="text-xs text-ink-400 dark:text-ink-600">Choose your currency — USD, EUR, GBP & more</p>
               </div>
               <ArrowRight className="h-5 w-5 text-ink-500" />
             </button>
@@ -412,11 +453,12 @@ function PaymentContent() {
               className="flex w-full items-center gap-4 rounded-2xl border border-white/10 bg-ink-900/60 p-5 text-left transition hover:border-gold-400/30 dark:border-ink-200 dark:bg-ink-100/60"
             >
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-500/10">
-                <Bitcoin className="h-6 w-6 text-orange-400" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={COINS[0].logo} alt="BTC" className="h-6 w-6" />
               </div>
               <div className="flex-1">
                 <p className="font-semibold text-ink-50 dark:text-ink-950">Crypto Payment</p>
-                <p className="text-xs text-ink-400 dark:text-ink-600">Bitcoin, Ethereum, Tether (USDT)</p>
+                <p className="text-xs text-ink-400 dark:text-ink-600">BTC, Ethereum, USDT</p>
               </div>
               <ArrowRight className="h-5 w-5 text-ink-500" />
             </button>
@@ -427,6 +469,72 @@ function PaymentContent() {
           )}
 
           <button onClick={() => setStep("plan")} className="mt-4 block w-full text-center text-sm text-ink-400 hover:text-gold-300 transition dark:text-ink-600">Back</button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Step: Choose bank transfer currency ──
+  if (step === "transfer-currency") {
+    return (
+      <div className="min-h-screen bg-ink-950 px-4 py-12 sm:px-6 dark:bg-white">
+        <div className="mx-auto max-w-lg">
+          <div className="text-center">
+            <p className="eyebrow mb-2">Bank transfer</p>
+            <h1 className="font-display text-3xl text-ink-50 dark:text-ink-950">Choose your currency</h1>
+            <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">
+              {selectedPlan.label} — {priceDisplay} · Select the currency you want to transfer in
+            </p>
+          </div>
+
+          <div className="mt-6 flex items-center gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4">
+            <Globe className="h-5 w-5 shrink-0 text-emerald-400" />
+            <p className="text-sm text-ink-300 dark:text-ink-700">
+              We'll show you a bank account in your chosen currency to transfer to.
+            </p>
+          </div>
+
+          {error && (
+            <div className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">{error}</div>
+          )}
+
+          <div className="mt-8 space-y-3">
+            {TRANSFER_CURRENCIES.map((c) => (
+              <button
+                key={c.code}
+                onClick={() => setSelectedTransferCurrency(c)}
+                className={`flex w-full items-center gap-4 rounded-2xl border p-5 text-left transition ${
+                  selectedTransferCurrency.code === c.code
+                    ? "border-gold-400 bg-gold-400/10"
+                    : "border-white/10 bg-ink-900/60 hover:border-gold-400/30 dark:border-ink-200 dark:bg-ink-100/60"
+                }`}
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-2xl">
+                  {c.flag}
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-ink-50 dark:text-ink-950">{c.label}</p>
+                  <p className="text-xs text-ink-400 dark:text-ink-600">{c.code} · {c.symbol}</p>
+                </div>
+                {selectedTransferCurrency.code === c.code && <CheckCircle2 className="h-5 w-5 text-gold-400" />}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={handleBankTransfer}
+            disabled={loading}
+            className="mt-6 flex w-full items-center justify-center gap-3 rounded-full bg-gold-400 py-4 text-sm font-semibold text-ink-950 transition hover:bg-gold-300 disabled:opacity-60"
+          >
+            <Landmark className="h-5 w-5" />
+            {loading ? "Preparing bank transfer…" : `Continue with ${selectedTransferCurrency.code}`}
+          </button>
+
+          {loading && (
+            <p className="mt-4 text-center text-sm text-ink-400 dark:text-ink-600">Redirecting to Paystack…</p>
+          )}
+
+          <button onClick={() => setStep("method")} className="mt-4 block w-full text-center text-sm text-ink-400 hover:text-gold-300 transition dark:text-ink-600">Back</button>
         </div>
       </div>
     );
@@ -460,13 +568,12 @@ function PaymentContent() {
                 }`}
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl" style={{ backgroundColor: `${coin.color}20` }}>
-                  {coin.id === "bitcoin" && <Bitcoin className="h-6 w-6" style={{ color: coin.color }} />}
-                  {coin.id === "ethereum" && <Coins className="h-6 w-6" style={{ color: coin.color }} />}
-                  {coin.id === "tether" && <Repeat className="h-6 w-6" style={{ color: coin.color }} />}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={coin.logo} alt={coin.fullName} className="h-7 w-7" />
                 </div>
                 <div className="flex-1">
                   <p className="font-semibold text-ink-50 dark:text-ink-950">{coin.label}</p>
-                  <p className="text-xs text-ink-400 dark:text-ink-600">{coin.symbol}</p>
+                  <p className="text-xs text-ink-400 dark:text-ink-600">{coin.fullName}</p>
                 </div>
                 {selectedCoin.id === coin.id && <CheckCircle2 className="h-5 w-5 text-gold-400" />}
               </button>
@@ -478,7 +585,8 @@ function PaymentContent() {
               disabled={loading}
               className="mt-6 flex w-full items-center justify-center gap-3 rounded-full bg-gold-400 py-4 text-sm font-semibold text-ink-950 transition hover:bg-gold-300 disabled:opacity-60"
             >
-              <Bitcoin className="h-5 w-5" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={selectedCoin.logo} alt={selectedCoin.fullName} className="h-5 w-5" />
               {loading ? "Preparing…" : `Pay ${cryptoPriceDisplay} with ${selectedCoin.symbol}`}
             </button>
 
@@ -541,11 +649,12 @@ function PaymentContent() {
           <div className="mt-6 rounded-2xl border border-orange-500/20 bg-orange-500/5 p-6">
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-500/10">
-                <Wallet className="h-6 w-6 text-orange-400" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={COINS[0].logo} alt="BTC" className="h-6 w-6" />
               </div>
-              <div>
-                <p className="font-semibold text-ink-50 dark:text-ink-950">Need {selectedCoin.symbol}?</p>
-                <p className="text-xs text-ink-400 dark:text-ink-600">Buy crypto with a card via Changelly</p>
+              <div className="flex-1">
+                <p className="font-semibold text-ink-50 dark:text-ink-950">Crypto Payment</p>
+                <p className="text-xs text-ink-400 dark:text-ink-600">BTC, Ethereum, USDT</p>
               </div>
             </div>
 

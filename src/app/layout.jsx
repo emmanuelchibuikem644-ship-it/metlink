@@ -3,6 +3,7 @@ import { AuthProvider } from "../lib/auth-context";
 import { ThemeProvider } from "../lib/theme-context";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
+import SupportChat from "../components/SupportChat";
 
 export const metadata = {
   title: "Kindred — Compatibility, confirmed.",
@@ -28,6 +29,7 @@ export default function RootLayout({ children }) {
             <NavBar />
             <main className="flex-1">{children}</main>
             <Footer />
+            <SupportChat />
           </AuthProvider>
         </ThemeProvider>
       </body>

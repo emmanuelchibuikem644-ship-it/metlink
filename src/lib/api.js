@@ -134,6 +134,11 @@ export const api = {
       method: "POST",
       body: { profile_id: profileId, plan, country, currency_symbol: currencySymbol },
     }),
+  createPaystackTransfer: (profileId, plan, country, currency, currencySymbol) =>
+    apiFetch("/core/paystack/create-transfer/", {
+      method: "POST",
+      body: { profile_id: profileId, plan, country, currency, currency_symbol: currencySymbol },
+    }),
   confirmPaystackPayment: (reference, profileId, plan, country, currencySymbol) =>
     apiFetch("/core/paystack/confirm-payment/", {
       method: "POST",
@@ -152,6 +157,13 @@ export const api = {
   myCryptoPayments: () => apiFetch("/core/crypto-payments/mine/"),
   verifyCryptoPayment: (paymentId, txHash) =>
     apiFetch("/core/crypto-payments/verify/", { method: "POST", body: { payment_id: paymentId, tx_hash: txHash } }),
+  // Customer support chat
+  mySupportTickets: () => apiFetch("/core/support/tickets/"),
+  createSupportTicket: (subject, content, whatsappPhone = "") =>
+    apiFetch("/core/support/tickets/", { method: "POST", body: { subject, content, whatsapp_phone: whatsappPhone } }),
+  getSupportTicket: (ticketId) => apiFetch(`/core/support/tickets/${ticketId}/`),
+  sendSupportMessage: (ticketId, content) =>
+    apiFetch(`/core/support/tickets/${ticketId}/`, { method: "POST", body: { content } }),
 };
 
 /* ── Admin-specific fetch (uses admin token, not JWT) ──────── */

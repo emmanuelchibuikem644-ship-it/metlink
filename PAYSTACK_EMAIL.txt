@@ -1,0 +1,52 @@
+To: support@paystack.com
+Subject: Request to Enable International Bank Transfer (USD/EUR/GBP) for Subscription Payments
+
+Dear Paystack Support Team,
+
+I hope this email finds you well. I am writing to request the activation of international bank transfer capabilities (USD, EUR, and GBP) on my Paystack account.
+
+**Business Information:**
+- Business Name: Metlink
+- Business Type: Online dating / social subscription platform
+- Website: https://metlinks.vercel.app
+- Paystack Account Email: [YOUR PAYSTACK ACCOUNT EMAIL HERE]
+- Paystack Business ID: [YOUR PAYSTACK BUSINESS ID HERE]
+
+**What We Need:**
+We are building a subscription-based dating platform where users pay to unlock premium profiles and services. Our user base is international — spanning the United States, Europe, the United Kingdom, and Africa.
+
+Currently, when our users select "Bank Transfer" as their payment method, they are only shown a Nigerian Naira (NGN) bank account. However, many of our international users (in the US, UK, and Europe) need to transfer in their local currency.
+
+We would like to enable **international bank transfer settlement** so that when a user selects:
+- **USD** → they see a US Dollar bank account to transfer to
+- **EUR** → they see a Euro bank account to transfer to
+- **GBP** → they see a British Pound bank account to transfer to
+
+**Technical Implementation:**
+We are already using the Paystack API correctly. Our backend initializes transactions with:
+- `channels: ["bank_transfer"]`
+- `currency: "USD"` / `"EUR"` / `"GBP"` / `"NGN"` (based on user selection)
+
+The code is ready — we just need the international transfer feature enabled on our account to complete the setup.
+
+**Required Documents (if applicable):**
+Please let us know what documentation you need from us to enable this feature. We are happy to provide:
+- Business registration documents
+- Proof of business address
+- Any other KYC/verification documents required
+
+**Questions:**
+1. What is the process and timeline for enabling international bank transfers?
+2. Are there any additional fees or settlement requirements for USD/EUR/GBP transfers?
+3. What documents do we need to submit?
+
+We are eager to launch this feature for our international users and would appreciate your guidance on the next steps.
+
+Thank you for your time and support.
+
+Best regards,
+[YOUR FULL NAME]
+[YOUR TITLE, e.g., Founder / CEO]
+Metlink
+[YOUR EMAIL ADDRESS]
+[YOUR PHONE NUMBER]
