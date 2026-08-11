@@ -4524,7 +4524,7 @@ const profiles = [
     price_cents: 32000, // $200
     gallery: [
       "/WhatsApp Image 2026-07-30 at 12.55.34 PM.jpeg",
-      "/WhatsApp Image 2026-07-30 at 12.55.34 PM.jpeg",
+      "/WhatsApp Image 2026-08-11 at 11.49.25 AM.jpeg",
       "/WhatsApp Image 2026-07-30 at 12.55.34 PM.jpeg",
       "/WhatsApp Image 2026-07-30 at 12.55.34 PM.jpeg",
       "/WhatsApp Image 2026-07-30 at 12.55.34 PM.jpeg",
@@ -4597,8 +4597,8 @@ const profiles = [
     posts: 19,
     price_cents: 22000, // $200
     gallery: [
-      "/WhatsApp Image 2026-07-30 at 12.56.52 PM.jpeg",
-      "/WhatsApp Image 2026-07-30 at 12.56.52 PM.jpeg",
+      "/WhatsApp Image 2026-08-11 at 11.49.22 AM.jpeg",
+      "/WhatsApp Image 2026-08-11 at 11.49.23 AM.jpeg",
       "/WhatsApp Image 2026-07-30 at 12.56.52 PM.jpeg",
       "/WhatsApp Image 2026-07-30 at 12.56.52 PM.jpeg",
       "/WhatsApp Image 2026-07-30 at 12.56.52 PM.jpeg",
@@ -4653,7 +4653,7 @@ const profiles = [
     price_cents: 35000, // $200
     gallery: [
       "/WhatsApp Image 2026-07-30 at 12.57.45 PM.jpeg",
-      "/WhatsApp Image 2026-07-30 at 12.57.45 PM.jpeg",
+      "/WhatsApp Image 2026-08-11 at 12.04.26 PM.jpeg",
       "/WhatsApp Image 2026-07-30 at 12.57.45 PM.jpeg",
       "/WhatsApp Image 2026-07-30 at 12.57.45 PM.jpeg",
       "/WhatsApp Image 2026-07-30 at 12.57.45 PM.jpeg",
@@ -4846,15 +4846,15 @@ const profiles = [
     gender: "male",
     orientation: "gay",
     sexual_role: "Top",
-    avatar: "/WhatsApp Image 2026-07-30 at 1.08.14 PM.jpeg",
+    avatar: "/WhatsApp Image 2026-08-11 at 11.58.57 AM.jpeg",
     cover: "",
     bio: "Ready for some fun!", 
     followers: "4.5K",
     posts: 31,
     price_cents: 20000, // $200
     gallery: [
-      "/WhatsApp Image 2026-07-30 at 1.08.14 PM.jpeg",
-      "/WhatsApp Image 2026-07-30 at 1.08.14 PM.jpeg",
+      "/WhatsApp Image 2026-08-11 at 11.58.55 AM.jpeg",
+      "/WhatsApp Video 2026-08-11 at 11.58.52 AM.mp4",
       "/WhatsApp Image 2026-07-30 at 1.08.14 PM.jpeg",
       "/WhatsApp Image 2026-07-30 at 1.08.14 PM.jpeg",
       "/WhatsApp Image 2026-07-30 at 1.08.14 PM.jpeg",
