@@ -6,9 +6,9 @@ import Footer from "../components/Footer";
 import SupportChat from "../components/SupportChat";
 
 export const metadata = {
-  title: "Kindred — Compatibility, confirmed.",
+  title: "Meetlink — Compatibility, confirmed.",
   description:
-    "Kindred is a premium dating platform for adults who want compatibility, not just a swipe.",
+    "Meetlink is a premium dating platform for adults who want compatibility, not just a swipe.",
 };
 
 export default function RootLayout({ children }) {

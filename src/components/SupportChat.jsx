@@ -145,7 +145,7 @@ export default function SupportChat() {
               <Headset className="h-5 w-5 text-white" />
             </div>
             <div className="flex-1">
-              <p className="font-semibold text-ink-950">Metlink Support</p>
+              <p className="font-semibold text-ink-950">Meetlink Support</p>
               <p className="text-xs text-ink-800">
                 <span className="mr-1 inline-block h-2 w-2 rounded-full bg-emerald-500" />
                 Usually replies within a few minutes
@@ -185,16 +185,25 @@ export default function SupportChat() {
             )}
 
             {user && messages.length === 0 && !sending && (
-              <div className="mt-8 text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gold-400/10">
-                  <Headset className="h-7 w-7 text-gold-400" />
+              <div className="mt-4">
+                <div className="mb-3 flex justify-start">
+                  <div className="max-w-[85%] rounded-2xl rounded-bl-sm bg-ink-800 px-4 py-3 text-sm text-ink-50 dark:bg-ink-200 dark:text-ink-950">
+                    <p className="mb-1 text-[11px] uppercase tracking-wide text-gold-400 dark:text-gold-500">
+                      Meetlink Support
+                    </p>
+                    👋 Hi there! Welcome to Meetlink Support.
+                    <br /><br />
+                    How can we help you today? Whether it's about payments, subscriptions, or anything else, we're here for you. Just type your message below and we'll get back to you shortly! 💛
+                  </div>
                 </div>
-                <p className="mt-3 text-sm font-semibold text-ink-50 dark:text-ink-950">
-                  How can we help you today?
-                </p>
-                <p className="mt-1 text-xs text-ink-400 dark:text-ink-600">
-                  Ask us about payments, subscriptions, or any other issue.
-                </p>
+                <div className="mb-3 flex justify-start">
+                  <div className="max-w-[85%] rounded-2xl rounded-bl-sm bg-ink-800 px-4 py-3 text-sm text-ink-50 dark:bg-ink-200 dark:text-ink-950">
+                    <p className="mb-1 text-[11px] uppercase tracking-wide text-gold-400 dark:text-gold-500">
+                      Meetlink Support
+                    </p>
+                    💡 <strong>Tip:</strong> You can ask about card payments, crypto (BTC, Ethereum, USDT), or any issue you're facing.
+                  </div>
+                </div>
               </div>
             )}
 

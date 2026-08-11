@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Shield, Trash2, Activity, Eye, LogOut, Search, X, Download, AlertTriangle, Heart, CreditCard, MessageSquare, Send, Camera, Bitcoin } from "lucide-react";
+import { Shield, Trash2, Activity, Eye, LogOut, Search, X, Download, AlertTriangle, Heart, CreditCard, MessageSquare, Send, Camera, Bitcoin, Headset, CheckCircle2 } from "lucide-react";
 import { api } from "../../lib/api";
 import allProfiles from "../../data/profiles";
 
@@ -43,6 +43,12 @@ function AdminDashboard() {
   const [chatConversations, setChatConversations] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [cryptoPayments, setCryptoPayments] = useState([]);
+  const [supportTickets, setSupportTickets] = useState([]);
+  const [selectedSupportTicketId, setSelectedSupportTicketId] = useState(null);
+  const [selectedSupportTicket, setSelectedSupportTicket] = useState(null);
+  const [supportMessages, setSupportMessages] = useState([]);
+  const [supportReplyText, setSupportReplyText] = useState("");
+  const [supportReplying, setSupportReplying] = useState(false);
   const [selectedConversationId, setSelectedConversationId] = useState(null);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [conversationMessages, setConversationMessages] = useState([]);
@@ -52,7 +58,7 @@ function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [showDeleteAll, setShowDeleteAll] = useState(false);
-  const [activeTab, setActiveTab] = useState("users"); // users | likes | subs | chats | bookings | crypto
+  const [activeTab, setActiveTab] = useState("users"); // users | likes | subs | chats | bookings | crypto | support
   const [refresh, setRefresh] = useState(0);
   const [error, setError] = useState("");
 
@@ -71,7 +77,8 @@ function AdminDashboard() {
       api.adminChats().catch(() => []),
       api.adminBookings().catch(() => []),
       api.adminCryptoPayments().catch(() => []),
-    ]).then(([s, u, l, subs, chats, allBookings, crypto]) => {
+      api.adminSupportTickets().catch(() => ({ tickets: [] })),
+    ]).then(([s, u, l, subs, chats, allBookings, crypto, support]) => {
       setStats(s);
       setUsers(u);
       setLikes(l);
@@ -79,6 +86,7 @@ function AdminDashboard() {
       setChatConversations(chats);
       setBookings(allBookings);
       setCryptoPayments(crypto);
+      setSupportTickets(support.tickets || []);
     });
   }
 
@@ -98,6 +106,51 @@ function AdminDashboard() {
       const data = await api.adminChatDetail(conversationId);
       setSelectedConversation(data.conversation);
       setConversationMessages(data.messages);
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  async function openSupportTicket(ticketId) {
+    setSelectedSupportTicketId(ticketId);
+    try {
+      const data = await api.adminSupportTicketDetail(ticketId);
+      setSelectedSupportTicket(data);
+      setSupportMessages(data.messages || []);
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  async function handleSupportReply() {
+    const content = supportReplyText.trim();
+    if (!selectedSupportTicketId || !content) return;
+
+    setSupportReplying(true);
+    try {
+      await api.adminSupportReply(selectedSupportTicketId, content);
+      setSupportMessages((current) => [...current, {
+        id: Date.now(),
+        sender_type: "admin",
+        content,
+        created_at: new Date().toISOString(),
+      }]);
+      setSupportReplyText("");
+      const data = await api.adminSupportTickets();
+      setSupportTickets(data.tickets || []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSupportReplying(false);
+    }
+  }
+
+  async function resolveSupportTicket(ticketId) {
+    try {
+      await api.adminSupportResolve(ticketId);
+      await openSupportTicket(ticketId);
+      const data = await api.adminSupportTickets();
+      setSupportTickets(data.tickets || []);
     } catch (err) {
       setError(err.message);
     }
@@ -217,7 +270,7 @@ function AdminDashboard() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `metlink-users-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `meetlink-users-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
   }
@@ -374,6 +427,16 @@ function AdminDashboard() {
             }`}
           >
             Crypto ({cryptoPayments.length})
+          </button>
+          <button
+            onClick={() => setActiveTab("support")}
+            className={`pb-3 text-sm font-medium transition ${
+              activeTab === "support" ? "border-b-2 border-gold-400 text-gold-400" : "text-ink-400 hover:text-ink-50"
+            }`}
+          >
+            <span className="flex items-center gap-1">
+              <Headset className="h-4 w-4" /> Support ({supportTickets.length})
+            </span>
           </button>
         </div>
 
@@ -694,6 +757,159 @@ function AdminDashboard() {
                   )}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {/* ── SUPPORT TAB ── */}
+        {activeTab === "support" && (
+          <div className="mt-6">
+            <div className="mb-6 flex items-center justify-between gap-3">
+              <h2 className="font-display text-2xl text-ink-50">Customer support</h2>
+              <span className="rounded-full border border-white/10 bg-ink-900/60 px-3 py-1 text-xs text-ink-400">
+                {supportTickets.length} tickets
+              </span>
+            </div>
+
+            <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
+              {/* Ticket list */}
+              <div className="rounded-2xl border border-white/10 bg-ink-900/60">
+                <div className="border-b border-white/10 px-5 py-4">
+                  <h3 className="font-semibold text-ink-50">Support tickets</h3>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm">
+                    <thead className="border-b border-white/10 bg-ink-900/80">
+                      <tr>
+                        <th className="px-5 py-4 font-medium text-ink-400">User</th>
+                        <th className="px-5 py-4 font-medium text-ink-400">Last message</th>
+                        <th className="px-5 py-4 font-medium text-ink-400">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {supportTickets.length === 0 ? (
+                        <tr>
+                          <td colSpan={3} className="px-5 py-10 text-center text-ink-500">
+                            No support tickets yet.
+                          </td>
+                        </tr>
+                      ) : (
+                        supportTickets.map((ticket) => (
+                          <tr
+                            key={ticket.id}
+                            className={`cursor-pointer border-b border-white/5 transition hover:bg-white/[0.03] ${
+                              selectedSupportTicketId === ticket.id ? "bg-gold-400/10" : ""
+                            }`}
+                            onClick={() => openSupportTicket(ticket.id)}
+                          >
+                            <td className="px-5 py-4">
+                              <div className="text-ink-50">{ticket.user?.display_name || ticket.user?.email}</div>
+                              <div className="text-xs text-ink-400">{ticket.user?.email}</div>
+                            </td>
+                            <td className="px-5 py-4 text-ink-500">
+                              {ticket.last_message || "No messages yet."}
+                            </td>
+                            <td className="px-5 py-4">
+                              <span className={`rounded-full px-2.5 py-0.5 text-xs ${
+                                ticket.status === "resolved"
+                                  ? "bg-emerald-500/15 text-emerald-300"
+                                  : "bg-gold-400/15 text-gold-300"
+                              }`}>{ticket.status}</span>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Ticket detail */}
+              <div className="rounded-2xl border border-white/10 bg-ink-900/60 p-5">
+                <div className="mb-4 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-ink-50">
+                    <Headset className="h-4 w-4 text-gold-400" />
+                    <h3 className="font-semibold">Ticket detail</h3>
+                  </div>
+                  {selectedSupportTicket && selectedSupportTicket.status === "open" && (
+                    <button
+                      onClick={() => resolveSupportTicket(selectedSupportTicket.id)}
+                      className="flex items-center gap-1 rounded bg-emerald-500/20 px-2.5 py-1 text-xs text-emerald-300 hover:bg-emerald-500/30"
+                    >
+                      <CheckCircle2 className="h-3.5 w-3.5" /> Resolve
+                    </button>
+                  )}
+                </div>
+
+                {selectedSupportTicket ? (
+                  <>
+                    <div className="mb-4 rounded-xl border border-white/10 bg-ink-950/70 p-4">
+                      <div className="text-sm text-ink-400">User</div>
+                      <div className="mt-1 font-semibold text-ink-50">
+                        {selectedSupportTicket.user?.display_name || selectedSupportTicket.user?.email}
+                      </div>
+                      <div className="mt-1 text-xs text-ink-500">
+                        {selectedSupportTicket.user?.email}
+                      </div>
+                      {selectedSupportTicket.whatsapp_phone && (
+                        <div className="mt-1 text-xs text-ink-500">
+                          WhatsApp: {selectedSupportTicket.whatsapp_phone}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="max-h-[26rem] space-y-3 overflow-y-auto pr-1">
+                      {supportMessages.length === 0 ? (
+                        <div className="rounded-xl border border-dashed border-white/10 p-4 text-sm text-ink-500">
+                          No messages in this ticket yet.
+                        </div>
+                      ) : (
+                        supportMessages.map((message) => (
+                          <div
+                            key={message.id}
+                            className={`max-w-[90%] rounded-2xl px-4 py-3 text-sm ${
+                              message.sender_type === "user"
+                                ? "ml-auto bg-gold-400 text-ink-950"
+                                : "bg-white/5 text-ink-50"
+                            }`}
+                          >
+                            <div className="mb-1 text-[11px] uppercase tracking-wide opacity-75">
+                              {message.sender_type === "user" ? "Customer" : "You (Admin)"}
+                            </div>
+                            {message.content}
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    <div className="mt-4">
+                      <textarea
+                        value={supportReplyText}
+                        onChange={(e) => setSupportReplyText(e.target.value)}
+                        rows={3}
+                        className="input-field min-h-[96px] resize-none"
+                        placeholder="Reply to the customer..."
+                      />
+                    </div>
+                    <div className="mt-3 flex justify-end">
+                      <button
+                        disabled={supportReplying || !supportReplyText.trim()}
+                        onClick={handleSupportReply}
+                        className="btn-primary !px-4 !py-2 text-sm"
+                      >
+                        <span className="flex items-center gap-2">
+                          <Send className="h-4 w-4" />
+                          {supportReplying ? "Sending…" : "Send reply"}
+                        </span>
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="rounded-xl border border-dashed border-white/10 p-4 text-sm text-ink-500">
+                    Select a ticket to see the conversation and reply.
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

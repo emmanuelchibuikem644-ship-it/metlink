@@ -15,10 +15,11 @@ function HomeContent() {
   const [search, setSearch] = useState("");
   const [country, setCountry] = useState("All countries");
   const [role, setRole] = useState("All roles");
+  const [orientationTab, setOrientationTab] = useState("straight"); // straight | gay | bisexual
 
-  // Filter profiles based on user's orientation
+  // Filter profiles based on the selected orientation tab
   const profiles = useMemo(() => {
-  const orientation = (user?.orientation || "straight").toLowerCase();
+  const orientation = orientationTab.toLowerCase();
 
   if (orientation === "gay") {
     // Show only gay male profiles
@@ -43,7 +44,7 @@ function HomeContent() {
       profile.orientation.toLowerCase() === "straight" &&
       profile.gender.toLowerCase() === "female"
   );
-}, [user]);
+}, [orientationTab]);
 
   const countries = useMemo(
     () => ["All countries", ...new Set(profiles.map((item) => item.country))],
@@ -84,6 +85,40 @@ function HomeContent() {
       <h1 className="text-4xl font-bold text-ink-50 dark:text-ink-950">
         Hi, {user.display_name}
       </h1>
+
+      {/* ── Orientation tabs (Straight | Gay | Bisexual) ── */}
+      <div className="mt-8 flex flex-wrap gap-3">
+        <button
+          onClick={() => setOrientationTab("straight")}
+          className={`rounded-full px-6 py-2.5 text-sm font-semibold transition ${
+            orientationTab === "straight"
+              ? "bg-gold-400 text-ink-950 shadow-lg shadow-gold-400/20"
+              : "border border-white/10 bg-ink-900/60 text-ink-400 hover:text-ink-50 dark:border-ink-200 dark:bg-white dark:text-ink-600 dark:hover:text-ink-950"
+          }`}
+        >
+          Straight ♀
+        </button>
+        <button
+          onClick={() => setOrientationTab("gay")}
+          className={`rounded-full px-6 py-2.5 text-sm font-semibold transition ${
+            orientationTab === "gay"
+              ? "bg-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/20"
+              : "border border-white/10 bg-ink-900/60 text-ink-400 hover:text-ink-50 dark:border-ink-200 dark:bg-white dark:text-ink-600 dark:hover:text-ink-950"
+          }`}
+        >
+          Gay ♂
+        </button>
+        <button
+          onClick={() => setOrientationTab("bisexual")}
+          className={`rounded-full px-6 py-2.5 text-sm font-semibold transition ${
+            orientationTab === "bisexual"
+              ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
+              : "border border-white/10 bg-ink-900/60 text-ink-400 hover:text-ink-50 dark:border-ink-200 dark:bg-white dark:text-ink-600 dark:hover:text-ink-950"
+          }`}
+        >
+          Bisexual ⚥
+        </button>
+      </div>
 
       {/* Search */}
 

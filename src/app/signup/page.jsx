@@ -50,7 +50,7 @@ export default function SignupPage() {
     <section className="mx-auto flex min-h-[70vh] max-w-lg flex-col justify-center px-6 py-20">
       <p className="eyebrow mb-2 text-center">Get started</p>
       <h1 className="text-center font-display text-4xl text-ink-50 dark:text-ink-950">Create your account</h1>
-      <p className="mt-3 text-center text-sm text-ink-400 dark:text-ink-600">You must be 18 or older to join Kindred.</p>
+      <p className="mt-3 text-center text-sm text-ink-400 dark:text-ink-600">You must be 18 or older to join Meetlink.</p>
 
       <form onSubmit={handleSubmit} className="card mt-10 space-y-5">
         <Banner tone="error">{error}</Banner>

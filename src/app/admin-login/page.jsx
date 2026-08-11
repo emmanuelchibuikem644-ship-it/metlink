@@ -50,7 +50,7 @@ export default function AdminLoginPage() {
           <input
             type="email"
             className="input-field"
-            placeholder="admin@metlink.com"
+            placeholder="admin@meetlink.com"
             required
             autoFocus
             value={email}

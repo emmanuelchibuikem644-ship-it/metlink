@@ -11,7 +11,6 @@ const links = [
   { href: "/about", label: "About" },
   { href: "/service", label: "Service" },
   { href: "/booking", label: "Booking System" },
-  { href: "/payment", label: "Add card" },
   
 ];
 

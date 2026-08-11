@@ -1,6 +1,6 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
-const TOKEN_KEY = "metlink_tokens";
+const TOKEN_KEY = "meetlink_tokens";
 
 export function getTokens() {
   if (typeof window === "undefined") return null;
@@ -164,6 +164,13 @@ export const api = {
   getSupportTicket: (ticketId) => apiFetch(`/core/support/tickets/${ticketId}/`),
   sendSupportMessage: (ticketId, content) =>
     apiFetch(`/core/support/tickets/${ticketId}/`, { method: "POST", body: { content } }),
+  // Admin support ticket management
+  adminSupportTickets: () => adminFetch("/core/admin/support/"),
+  adminSupportTicketDetail: (ticketId) => adminFetch(`/core/admin/support/${ticketId}/`),
+  adminSupportReply: (ticketId, content) =>
+    adminFetch(`/core/admin/support/${ticketId}/`, { method: "POST", body: { content } }),
+  adminSupportResolve: (ticketId) =>
+    adminFetch(`/core/admin/support/${ticketId}/resolve/`, { method: "POST" }),
 };
 
 /* ── Admin-specific fetch (uses admin token, not JWT) ──────── */

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { CreditCard, Landmark, ShieldCheck, Sparkles, CheckCircle2, ArrowRight, Wallet, Copy, ExternalLink, QrCode, Globe } from "lucide-react";
+import { CreditCard, Sparkles, CheckCircle2, ArrowRight, Wallet, Copy, ExternalLink, QrCode } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { api } from "../../lib/api";
 import ProtectedRoute from "../../components/ProtectedRoute";
@@ -59,16 +59,9 @@ const WALLET_ADDRESSES = {
   usdt: "TDBXXkAbmU453Bn9t4Hj9n5yDCcAEN9WxB",
 };
 
-// ── Bank transfer currencies (Paystack-supported) ──────────
-const TRANSFER_CURRENCIES = [
-  { code: "USD", label: "US Dollar", symbol: "$", flag: "🇺🇸" },
-  { code: "EUR", label: "Euro", symbol: "€", flag: "🇪🇺" },
-  { code: "GBP", label: "British Pound", symbol: "£", flag: "🇬🇧" },
-  { code: "NGN", label: "Nigerian Naira", symbol: "₦", flag: "🇳🇬" },
-  { code: "GHS", label: "Ghanaian Cedi", symbol: "₵", flag: "🇬🇭" },
-  { code: "KES", label: "Kenyan Shilling", symbol: "KSh", flag: "🇰🇪" },
-  { code: "ZAR", label: "South African Rand", symbol: "R", flag: "🇿🇦" },
-];
+// ── Card payment ───────────────────────────────────────────
+// (Bank transfer removed — only card and crypto are available)
+const CARD_NOTE = "Pay securely with Paystack — Visa, Mastercard, Verve";
 
 function PaymentContent() {
   const router = useRouter();
@@ -152,10 +145,9 @@ function PaymentContent() {
       .finally(() => setPriceLoading(false));
   }, [profileInfo.id, profileInfo.country]);
 
-  const [step, setStep] = useState("plan"); // plan → method → transfer-currency | paystack | crypto-select | crypto → success
+  const [step, setStep] = useState("plan"); // plan → method → paystack | crypto-select | crypto → success
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [selectedCoin, setSelectedCoin] = useState(COINS[0]);
-  const [selectedTransferCurrency, setSelectedTransferCurrency] = useState(TRANSFER_CURRENCIES[0]);
   const [txHash, setTxHash] = useState("");
   const [copied, setCopied] = useState(false);
 
@@ -177,47 +169,9 @@ function PaymentContent() {
   function handleGoToServices() { router.push("/service"); }
 
   // ── Paystack: initialize a transaction (card) ──
-  async function handlePaystackPayment() {
-    if (!profileInfo.id || !selectedPlan) return;
-    setLoading(true);
-    setError("");
-    try {
-      const res = await api.createPaystackPayment(
-        profileInfo.id,
-        selectedPlan.id,
-        profileInfo.country,
-        currencySymbol
-      );
-      setPaystackData(res);
-      // Redirect to Paystack's hosted checkout (card)
-      window.location.href = res.authorization_url;
-    } catch (err) {
-      setError(err.message);
-      setLoading(false);
-    }
-  }
-
-  // ── Paystack: bank transfer in user-selected currency ──
-  async function handleBankTransfer() {
-    if (!profileInfo.id || !selectedPlan || !selectedTransferCurrency) return;
-    setLoading(true);
-    setError("");
-    try {
-      const res = await api.createPaystackTransfer(
-        profileInfo.id,
-        selectedPlan.id,
-        profileInfo.country,
-        selectedTransferCurrency.code,
-        selectedTransferCurrency.symbol
-      );
-      setPaystackData(res);
-      // Redirect to Paystack's hosted checkout — Paystack shows the
-      // bank account in the user-selected currency (USD, EUR, GBP, etc.)
-      window.location.href = res.authorization_url;
-    } catch (err) {
-      setError(err.message);
-      setLoading(false);
-    }
+  // Card payment is currently unavailable — show message instead
+  function handlePaystackPayment() {
+    setError("Card payment is currently unavailable. Please use Crypto to complete your payment. 🪙");
   }
 
   // ── Verify a Paystack transaction after redirect back ──
@@ -364,7 +318,7 @@ function PaymentContent() {
                 )}
                 {plan.save && (
                   <span className="absolute -top-3 right-6 rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white">
-                    Save 20%
+                    Save $70
                   </span>
                 )}
                 <div className="flex items-center justify-between">
@@ -415,37 +369,18 @@ function PaymentContent() {
           )}
 
           <div className="mt-8 space-y-4">
-            {/* Paystack card payment */}
-            <button
-              onClick={handlePaystackPayment}
-              disabled={loading}
-              className="flex w-full items-center gap-4 rounded-2xl border border-white/10 bg-ink-900/60 p-5 text-left transition hover:border-gold-400/30 dark:border-ink-200 dark:bg-ink-100/60"
+            {/* Paystack card payment — currently unavailable */}
+            <div
+              className="flex w-full items-center gap-4 rounded-2xl border border-dashed border-white/10 bg-ink-900/40 p-5 text-left opacity-70 dark:border-ink-200 dark:bg-ink-100/40"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gold-400/10">
-                <CreditCard className="h-6 w-6 text-gold-400" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-ink-800/60">
+                <CreditCard className="h-6 w-6 text-ink-500" />
               </div>
               <div className="flex-1">
                 <p className="font-semibold text-ink-50 dark:text-ink-950">Card Payment</p>
-                <p className="text-xs text-ink-400 dark:text-ink-600">Pay securely with Paystack (Visa, Mastercard)</p>
+                <p className="text-xs text-amber-500">⚠️ Currently unavailable — please use Crypto</p>
               </div>
-              <ArrowRight className="h-5 w-5 text-ink-500" />
-            </button>
-
-            {/* Paystack bank transfer — choose currency first */}
-            <button
-              onClick={() => setStep("transfer-currency")}
-              disabled={loading}
-              className="flex w-full items-center gap-4 rounded-2xl border border-white/10 bg-ink-900/60 p-5 text-left transition hover:border-gold-400/30 dark:border-ink-200 dark:bg-ink-100/60"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10">
-                <Landmark className="h-6 w-6 text-emerald-400" />
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold text-ink-50 dark:text-ink-950">Bank Transfer</p>
-                <p className="text-xs text-ink-400 dark:text-ink-600">Choose your currency — USD, EUR, GBP & more</p>
-              </div>
-              <ArrowRight className="h-5 w-5 text-ink-500" />
-            </button>
+            </div>
 
             {/* Crypto */}
             <button
@@ -474,72 +409,6 @@ function PaymentContent() {
     );
   }
 
-  // ── Step: Choose bank transfer currency ──
-  if (step === "transfer-currency") {
-    return (
-      <div className="min-h-screen bg-ink-950 px-4 py-12 sm:px-6 dark:bg-white">
-        <div className="mx-auto max-w-lg">
-          <div className="text-center">
-            <p className="eyebrow mb-2">Bank transfer</p>
-            <h1 className="font-display text-3xl text-ink-50 dark:text-ink-950">Choose your currency</h1>
-            <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">
-              {selectedPlan.label} — {priceDisplay} · Select the currency you want to transfer in
-            </p>
-          </div>
-
-          <div className="mt-6 flex items-center gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4">
-            <Globe className="h-5 w-5 shrink-0 text-emerald-400" />
-            <p className="text-sm text-ink-300 dark:text-ink-700">
-              We'll show you a bank account in your chosen currency to transfer to.
-            </p>
-          </div>
-
-          {error && (
-            <div className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">{error}</div>
-          )}
-
-          <div className="mt-8 space-y-3">
-            {TRANSFER_CURRENCIES.map((c) => (
-              <button
-                key={c.code}
-                onClick={() => setSelectedTransferCurrency(c)}
-                className={`flex w-full items-center gap-4 rounded-2xl border p-5 text-left transition ${
-                  selectedTransferCurrency.code === c.code
-                    ? "border-gold-400 bg-gold-400/10"
-                    : "border-white/10 bg-ink-900/60 hover:border-gold-400/30 dark:border-ink-200 dark:bg-ink-100/60"
-                }`}
-              >
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-2xl">
-                  {c.flag}
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-ink-50 dark:text-ink-950">{c.label}</p>
-                  <p className="text-xs text-ink-400 dark:text-ink-600">{c.code} · {c.symbol}</p>
-                </div>
-                {selectedTransferCurrency.code === c.code && <CheckCircle2 className="h-5 w-5 text-gold-400" />}
-              </button>
-            ))}
-          </div>
-
-          <button
-            onClick={handleBankTransfer}
-            disabled={loading}
-            className="mt-6 flex w-full items-center justify-center gap-3 rounded-full bg-gold-400 py-4 text-sm font-semibold text-ink-950 transition hover:bg-gold-300 disabled:opacity-60"
-          >
-            <Landmark className="h-5 w-5" />
-            {loading ? "Preparing bank transfer…" : `Continue with ${selectedTransferCurrency.code}`}
-          </button>
-
-          {loading && (
-            <p className="mt-4 text-center text-sm text-ink-400 dark:text-ink-600">Redirecting to Paystack…</p>
-          )}
-
-          <button onClick={() => setStep("method")} className="mt-4 block w-full text-center text-sm text-ink-400 hover:text-gold-300 transition dark:text-ink-600">Back</button>
-        </div>
-      </div>
-    );
-  }
-
   // ── Step: Crypto coin selection ──
   if (step === "crypto-select") {
     const cryptoPriceDisplay = profilePrice ? formatPriceCents(profilePrice.initial_price_cents, profileInfo.country) : "";
@@ -555,6 +424,60 @@ function PaymentContent() {
           {error && (
             <div className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">{error}</div>
           )}
+
+          {/* ── Video tutorial ── */}
+          <div className="mt-6 overflow-hidden rounded-2xl border border-white/10 bg-ink-900/60 dark:border-ink-200 dark:bg-ink-100/60">
+            <div className="flex items-center gap-3 border-b border-white/10 px-4 py-3 dark:border-ink-200">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-red-500/10">
+                <ExternalLink className="h-4 w-4 text-red-400" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-ink-50 dark:text-ink-950">📺 Watch how to pay with crypto</p>
+                <p className="text-xs text-ink-400 dark:text-ink-600">Step-by-step video tutorial</p>
+              </div>
+            </div>
+            <div className="p-4">
+              <div className="aspect-video w-full overflow-hidden rounded-xl bg-ink-950 dark:bg-white">
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                  title="How to pay with crypto"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+              <p className="mt-3 text-xs text-ink-400 dark:text-ink-600">
+                Watch this short video to learn how to send crypto from your wallet app (Trust Wallet, Binance, Coinbase, etc.)
+              </p>
+            </div>
+          </div>
+
+          {/* ── Step-by-step instructions ── */}
+          <div className="mt-6 rounded-2xl border border-white/10 bg-ink-900/60 p-5 dark:border-ink-200 dark:bg-ink-100/60">
+            <p className="text-sm font-semibold text-ink-50 dark:text-ink-950">📋 How to pay with crypto — Step by Step</p>
+            <div className="mt-4 space-y-3">
+              {[
+                { n: "1", t: "Select your coin", d: "Choose BTC, Ethereum, or USDT below" },
+                { n: "2", t: "Open your crypto wallet app", d: "Trust Wallet, Binance, Coinbase, or any wallet that supports the coin" },
+                { n: "3", t: "Tap Send / Withdraw", d: "Enter the wallet address shown on the next page" },
+                { n: "4", t: "Select the correct network", d: "IMPORTANT: Use the exact network shown (BTC, ERC20, or TRC20)" },
+                { n: "5", t: "Send the exact amount", d: `Send ${cryptoPriceDisplay} worth of ${selectedCoin.symbol}` },
+                { n: "6", t: "Copy the transaction hash (TXID)", d: "Paste it on the next page and click Verify" },
+              ].map((s) => (
+                <div key={s.n} className="flex items-start gap-3">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gold-400/15 text-xs font-bold text-gold-400">
+                    {s.n}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-ink-50 dark:text-ink-950">{s.t}</p>
+                    <p className="text-xs text-ink-400 dark:text-ink-600">{s.d}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
           <div className="mt-8 space-y-4">
             {COINS.map((coin) => (

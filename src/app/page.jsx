@@ -145,7 +145,7 @@ export default function LandingPage() {
       {/* FEATURES */}
       <section className="border-t border-white/5 dark:border-ink-200  dark:bg-ink-100/40 white:bg-ink-800 py-24">
         <div className="mx-auto max-w-7xl px-6">
-          <p className="eyebrow mb-3">Why metlink</p>
+          <p className="eyebrow mb-3">Why meetlink</p>
           <h2 className="font-display text-3xl text-ink-50 dark:text-ink-950 md:text-4xl">
             Built for people who take connection seriously.
           </h2>
@@ -291,7 +291,7 @@ export default function LandingPage() {
           <h2 className="font-display text-3xl text-ink-50 dark:text-ink-950 md:text-4xl">Your safety shapes every decision we make.</h2>
           <p className="mx-auto mt-6 max-w-2xl text-ink-400 dark:text-ink-900">
             Profile verification, in-app reporting and blocking, and a dedicated safety team are built into
-            Kindred from day one — not bolted on afterward.
+            Meetlink from day one — not bolted on afterward.
           </p>
           <a href="#" className="btn-secondary mt-8 inline-flex">Read our safety tips</a>
         </div>
