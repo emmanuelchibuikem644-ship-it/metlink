@@ -4438,6 +4438,8 @@ const profiles = [
       "/WhatsApp Image 2026-07-29 at 12.07.06 PM.jpeg"
     ],
   },
+
+   // Gay profile 
   {
     id: 45,
     username: "James_king",
@@ -4457,8 +4459,8 @@ const profiles = [
     posts: 28,
     price_cents: 35000, // $350
     gallery: [
-      "/WhatsApp Image 2026-07-30 at 12.54.21 PM.jpeg",
-      "/WhatsApp Image 2026-07-30 at 12.54.21 PM.jpeg",
+      "/WhatsApp Image 2026-08-11 at 11.49.18 AM.jpeg",
+      "/WhatsApp Image 2026-08-11 at 11.49.17 AM.jpeg",
       "/WhatsApp Image 2026-07-30 at 12.54.21 PM.jpeg",
       "/WhatsApp Image 2026-07-30 at 12.54.21 PM.jpeg",
       "/WhatsApp Image 2026-07-30 at 12.54.21 PM.jpeg",
