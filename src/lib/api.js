@@ -40,7 +40,7 @@ async function refreshAccessToken() {
  * Thin wrapper around fetch that talks to the Django API, attaches the JWT
  * access token, and retries once after a silent refresh on a 401.
  */
-export async function apiFetch(path, { method = "GET", body, auth = true, retry = true, multipart = false, timeout = 15000 } = {}) {
+export async function apiFetch(path, { method = "GET", body, auth = true, retry = true, multipart = false, timeout = 30000 } = {}) {
   const headers = {};
 
   if (!multipart) {

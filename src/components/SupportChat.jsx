@@ -24,7 +24,7 @@ export default function SupportChat() {
     if (!user) return;
     try {
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('timeout')), 5000)
+        setTimeout(() => reject(new Error('timeout')), 15000)
       );
       const data = await Promise.race([api.mySupportTickets(), timeoutPromise]);
       const tickets = data?.tickets || [];
@@ -52,7 +52,7 @@ export default function SupportChat() {
     const interval = setInterval(async () => {
       try {
         const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('timeout')), 3000)
+          setTimeout(() => reject(new Error('timeout')), 10000)
         );
         const data = await Promise.race([api.getSupportTicket(ticketId), timeoutPromise]);
         if (data && data.messages) {

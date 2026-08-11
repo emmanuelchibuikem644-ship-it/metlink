@@ -57,9 +57,9 @@ export function AuthProvider({ children }) {
       setLoading(false);
       return;
     }
-    // Timeout after 3 seconds to avoid hanging if backend is slow/sleeping
+    // Timeout after 10 seconds to avoid hanging if backend is slow/sleeping
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('timeout')), 3000)
+      setTimeout(() => reject(new Error('timeout')), 10000)
     );
     Promise.race([
       api.me().then((me) => {
