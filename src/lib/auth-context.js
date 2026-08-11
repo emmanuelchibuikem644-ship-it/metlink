@@ -57,17 +57,21 @@ export function AuthProvider({ children }) {
       setLoading(false);
       return;
     }
-    api
-      .me()
-      .then((me) => {
+    // Timeout after 3 seconds to avoid hanging if backend is slow/sleeping
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('timeout')), 3000)
+    );
+    Promise.race([
+      api.me().then((me) => {
         const userData = attachProfilePic(me);
         if (!userData.orientation) {
           const saved = typeof window !== "undefined" ? window.localStorage.getItem(ORIENTATION_KEY) : null;
           if (saved) userData.orientation = saved;
         }
         setUser(userData);
-      })
-      .catch(() => setTokens(null))
+      }),
+      timeoutPromise
+    ]).catch(() => setTokens(null))
       .finally(() => setLoading(false));
   }, []);
 

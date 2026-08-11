@@ -19,14 +19,16 @@ export default function SupportChat() {
   const [typing, setTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // Load existing support ticket when the widget opens
+  // Load existing support ticket when the widget opens (with timeout to avoid hanging)
   const loadTickets = useCallback(async () => {
     if (!user) return;
     try {
-      const data = await api.mySupportTickets();
-      const tickets = data.tickets || [];
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('timeout')), 5000)
+      );
+      const data = await Promise.race([api.mySupportTickets(), timeoutPromise]);
+      const tickets = data?.tickets || [];
       if (tickets.length > 0) {
-        // Use the most recent open ticket (or latest ticket)
         const latest = tickets[0];
         setTicketId(latest.id);
         setHasTicket(true);
@@ -37,19 +39,22 @@ export default function SupportChat() {
         setMessages([]);
       }
     } catch {
-      // If the API isn't available yet, start fresh
+      // If the API isn't available or times out, start fresh
       setTicketId(null);
       setHasTicket(false);
       setMessages([]);
     }
   }, [user]);
 
-  // Poll for new messages when the chat is open
+  // Poll for new messages when the chat is open (with timeout)
   useEffect(() => {
     if (!open || !user || !hasTicket || !ticketId) return;
     const interval = setInterval(async () => {
       try {
-        const data = await api.getSupportTicket(ticketId);
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('timeout')), 3000)
+        );
+        const data = await Promise.race([api.getSupportTicket(ticketId), timeoutPromise]);
         if (data && data.messages) {
           setMessages(data.messages);
         }

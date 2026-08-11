@@ -40,7 +40,7 @@ async function refreshAccessToken() {
  * Thin wrapper around fetch that talks to the Django API, attaches the JWT
  * access token, and retries once after a silent refresh on a 401.
  */
-export async function apiFetch(path, { method = "GET", body, auth = true, retry = true, multipart = false } = {}) {
+export async function apiFetch(path, { method = "GET", body, auth = true, retry = true, multipart = false, timeout = 15000 } = {}) {
   const headers = {};
 
   if (!multipart) {
@@ -52,11 +52,25 @@ export async function apiFetch(path, { method = "GET", body, auth = true, retry 
     if (tokens?.access) headers["Authorization"] = `Bearer ${tokens.access}`;
   }
 
-  const res = await fetch(`${API_URL}${path}`, {
-    method,
-    headers,
-    body: body !== undefined ? (multipart ? body : JSON.stringify(body)) : undefined,
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  let res;
+  try {
+    res = await fetch(`${API_URL}${path}`, {
+      method,
+      headers,
+      body: body !== undefined ? (multipart ? body : JSON.stringify(body)) : undefined,
+      signal: controller.signal,
+    });
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      throw new Error('Request timed out. Please check your connection and try again.');
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (res.status === 401 && auth && retry) {
     const newAccess = await refreshAccessToken();

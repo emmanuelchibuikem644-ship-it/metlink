@@ -441,8 +441,8 @@ function PaymentContent() {
                 <iframe
                   width="100%"
                   height="100%"
-                  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                  title="How to pay with crypto"
+                  src="https://www.youtube.com/embed/1Vy948MVCig"
+                  title="How to buy crypto with card on Changelly"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
