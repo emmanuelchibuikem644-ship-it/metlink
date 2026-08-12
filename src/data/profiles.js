@@ -6191,7 +6191,7 @@ const profiles = [
     bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
     followers: "4.5K",
     posts: 31,
-    price_cents: 260000, // $200
+        price_cents: 60000, // $200
     gallery: [
       "/WhatsApp Image 2026-07-30 at 1.06.46 PM.jpeg",
       "/WhatsApp Video 2026-08-11 at 10.58.19 PM.mp4",
@@ -6325,7 +6325,7 @@ const profiles = [
     bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
     followers: "4.5K",
     posts: 31,
-    price_cents: 3500000, // $200
+        price_cents: 60000, // $200
     gallery: [
       "/WhatsApp Image 2026-07-30 at 1.04.04 PM.jpeg",
       "/WhatsApp Video 2026-08-11 at 12.04.22 PM.mp4",
@@ -6392,7 +6392,7 @@ const profiles = [
     bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
     followers: "4.5K",
     posts: 31,
-    price_cents: 180000, // $200
+        price_cents: 60000, // $200
     gallery: [
       "/WhatsApp Image 2026-07-30 at 1.03.20 PM.jpeg",
       "/WhatsApp Image 2026-07-30 at 1.03.20 PM.jpeg",
@@ -6459,7 +6459,7 @@ const profiles = [
     bio: "Adventurer at heart. Hiking, travelling, and good food are my love languages.",
     followers: "4.5K",
     posts: 31,
-    price_cents: 90000, // $200
+        price_cents: 60000, // $200
     gallery: [
       "/WhatsApp Image 2026-07-30 at 1.02.18 PM.jpeg",
       "/WhatsApp Image 2026-07-30 at 1.02.18 PM.jpeg",
@@ -6665,7 +6665,7 @@ const profiles = [
     bio: "Hockey nights and poutine bites. Canadian through and through 🍁",
     followers: "4.1K",
     posts: 28,
-    price_cents: 8500000, // $200
+        price_cents: 60000, // $200
     gallery: [
       "/WhatsApp Image 2026-07-30 at 1.15.24 PM.jpeg",
       "/WhatsApp Video 2026-08-11 at 11.21.11 PM.mp4",
@@ -6729,7 +6729,7 @@ const profiles = [
     bio: "Broadway dreams and city schemes. Let's hit the town 🎭",
     followers: "7.2K",
     posts: 51,
-    price_cents: 100000, // $300
+        price_cents: 60000, // $300
     gallery: [
       "/WhatsApp Image 2026-07-30 at 1.16.40 PM.jpeg",
       "/WhatsApp Image 2026-07-30 at 1.26.43 PM.jpeg",
@@ -7020,7 +7020,7 @@ const profiles = [
     bio: "Hollywood hills and open hearts. Chasing dreams 🎬",
     followers: "9.4K",
     posts: 64,
-    price_cents: 2200000, // $400
+        price_cents: 60000, // $400
     gallery: [
       "/WhatsApp Video 2026-08-11 at 12.02.06 PM.mp4",
       "/WhatsApp Image 2026-07-30 at 1.23.14 PM.jpeg",
@@ -7120,7 +7120,7 @@ const profiles = [
     bio: "Castles, kilts and cozy pubs. Come explore with me 🏰",
     followers: "3.9K",
     posts: 27,
-    price_cents: 1200000, // $200
+        price_cents: 60000, // $200
     gallery: [
       "/WhatsApp Video 2026-08-11 at 11.51.19 AM.mp4",
       "/WhatsApp Image 2026-07-30 at 1.23.51 PM.jpeg",
@@ -8376,7 +8376,7 @@ const profiles = [
   {
     id: 100,
     username: "Mark Ice",
-    displayName: "Mark",
+    displayName: "Mario",
     verified: true,
     online: true,
     age: 27,                         
@@ -8474,7 +8474,7 @@ const profiles = [
   // ╚══════════════════════════════════════════════════════════════╝
 
   {
-    id: 101,
+    id: 132,
     username: "jordan_bi",
     displayName: "Jordan",
     verified: true,

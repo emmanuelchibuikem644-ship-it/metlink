@@ -194,24 +194,41 @@ function ProfileContent({ profileId }) {
             <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
               {profile.gallery.map((photo, idx) => {
                 const isLocked = !hasAccess && idx >= FREE_PHOTOS;
+                const isVideo = typeof photo === "string" && photo.toLowerCase().includes(".mp4");
                 return (
                   <div
                     key={idx}
                     onClick={() => {
                       if (isLocked) {
                         handleSubscribe();
-                      } else {
+                      } else if (!isVideo) {
                         setShowModal(photo);
                       }
                     }}
                     className={`group relative aspect-square overflow-hidden rounded-xl border-subtle ${isLocked ? "cursor-pointer" : "cursor-zoom-in"}`}
                     >
-                      <Image 
-                        src={photo} 
-                        alt={`${profile.displayName} photo ${idx + 1}`} 
-                        fill 
-                        className={`object-cover transition duration-300 group-hover:scale-105 ${isLocked ? "blur-xl" : ""}`} 
-                      />
+                      {isVideo ? (
+                        <video
+                          src={photo}
+                          muted
+                          playsInline
+                          preload="metadata"
+                          className={`h-full w-full object-cover transition duration-300 group-hover:scale-105 ${isLocked ? "blur-xl" : ""}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!isLocked) {
+                              e.currentTarget.paused ? e.currentTarget.play() : e.currentTarget.pause();
+                            }
+                          }}
+                        />
+                      ) : (
+                        <Image 
+                          src={photo} 
+                          alt={`${profile.displayName} photo ${idx + 1}`} 
+                          fill 
+                          className={`object-cover transition duration-300 group-hover:scale-105 ${isLocked ? "blur-xl" : ""}`} 
+                        />
+                      )}
 
                       {isLocked && (
                         <div className="absolute inset-0 flex flex-col items-center justify-center bg-ink-950/60 transition group-hover:bg-ink-950/80 backdrop-blur-sm">
