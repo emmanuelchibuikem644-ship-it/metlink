@@ -43,7 +43,7 @@ export default function NavBar() {
         <div className="border-b border-white/5 bg-ink-950/95 backdrop-blur transition dark:border-black/10 dark:bg-white/95">
           <div className="page-shell flex items-center justify-between gap-3 py-4">
             <Link href="/" className="font-display text-2xl italic tracking-wide text-ink-50 dark:text-ink-950">
-              METLINK
+              MEETLINK
             </Link>
     <div className="flex items-center gap-2 sm:gap-3">
               {themeButton}
@@ -66,7 +66,7 @@ export default function NavBar() {
         <div className="page-shell flex flex-col gap-4 py-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center justify-between gap-3">
             <Link href="/home" className="font-display text-2xl italic tracking-wide text-ink-50 dark:text-ink-950">
-              METLINK
+              MEETLINK
             </Link>
 
             <div className="flex items-center gap-2 lg:hidden">

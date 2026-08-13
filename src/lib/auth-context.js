@@ -5,9 +5,9 @@ import { api, getTokens, setTokens } from "./api";
 import { registerUser, recordUserLogin } from "../data/admin";
 
 const AuthContext = createContext(null);
-const PROFILE_PIC_KEY = "Metlink_profile_pic";
-const BACKGROUND_PIC_KEY = "Metlink_background_pic";
-const ORIENTATION_KEY = "Metlink_orientation";
+const PROFILE_PIC_KEY = "Meetlink_profile_pic";
+const BACKGROUND_PIC_KEY = "Meetlink_background_pic";
+const ORIENTATION_KEY = "Meetlink_orientation";
 
 function attachProfilePic(userData) {
   if (typeof window === "undefined") return userData;

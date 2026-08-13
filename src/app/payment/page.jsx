@@ -456,14 +456,14 @@ function PaymentContent() {
 
           {/* ── Step-by-step instructions ── */}
           <div className="mt-6 rounded-2xl border border-white/10 bg-ink-900/60 p-5 dark:border-ink-200 dark:bg-ink-100/60">
-            <p className="text-sm font-semibold text-ink-50 dark:text-ink-950">📋 How to pay with crypto — Step by Step</p>
+            <p className="text-sm font-semibold text-ink-50 dark:text-ink-950">📋 How to pay with crypto on Changelly — Step by Step</p>
             <div className="mt-4 space-y-3">
               {[
-                { n: "1", t: "Select your coin", d: "Choose BTC, Ethereum, or USDT below" },
-                { n: "2", t: "Open your crypto wallet app", d: "Trust Wallet, Binance, Coinbase, or any wallet that supports the coin" },
-                { n: "3", t: "Tap Send / Withdraw", d: "Enter the wallet address shown on the next page" },
-                { n: "4", t: "Select the correct network", d: "IMPORTANT: Use the exact network shown (BTC, ERC20, or TRC20)" },
-                { n: "5", t: "Send the exact amount", d: `Send ${cryptoPriceDisplay} worth of ${selectedCoin.symbol}` },
+                { n: "1", t: "Select your coin below", d: `Choose ${selectedCoin.fullName} (${selectedCoin.symbol}) — BTC, Ethereum, or USDT` },
+                { n: "2", t: `Tap "Buy ${selectedCoin.symbol} with card on Changelly"`, d: "This opens Changelly in a new tab, exactly as shown in the video above" },
+                { n: "3", t: `Enter the amount to buy (${cryptoPriceDisplay})`, d: `Buy at least ${cryptoPriceDisplay} worth of ${selectedCoin.symbol}. Changelly lets you pay with your Visa/Mastercard.` },
+                { n: "4", t: `Send the crypto straight to our ${selectedCoin.network} address`, d: "On Changelly, enter the wallet address shown on the next page and select the exact network (BTC, ERC20, or TRC20)" },
+                { n: "5", t: "Confirm the purchase", d: "Changelly sends your crypto to the address automatically once the payment is confirmed" },
                 { n: "6", t: "Copy the transaction hash (TXID)", d: "Paste it on the next page and click Verify" },
               ].map((s) => (
                 <div key={s.n} className="flex items-start gap-3">

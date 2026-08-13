@@ -3,7 +3,7 @@
  *
  * ADMIN CREDENTIALS (hardcoded):
  *   ID:       "admin"
- *   Password: "MetlinkAdmin@2026"
+ *   Password: "MeetlinkAdmin@2026"
  *
  * The admin can log in from /admin-login and access /admin to manage
  * every user and profile on the platform.
@@ -11,20 +11,20 @@
 
 export const ADMIN_CREDENTIALS = {
   id: "admin",
-  password: "MetlinkAdmin@2026",
+  password: "MeetlinkAdmin@2026",
   display_name: "Oga Admin",
   is_admin: true,
 };
 
 /* ── localStorage keys ─────────────────────────────────────── */
 
-const REGISTERED_USERS_KEY = "Metlink_registered_users";
-const ADMIN_SESSION_KEY = "Metlink_admin_session";
+const REGISTERED_USERS_KEY = "Meetlink_registered_users";
+const ADMIN_SESSION_KEY = "Meetlink_admin_session";
 
 /* ── Registered users CRUD ─────────────────────────────────── */
 
 /**
- * Returns the list of every user who has signed up via the Metlink app.
+ * Returns the list of every user who has signed up via the Meetlink app.
  * Each user object looks like:
  *   { id, display_name, email, date_of_birth, gender, orientation,
  *     registered_at, last_login_at, profile_pic, background_pic, status }

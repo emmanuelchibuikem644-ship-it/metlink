@@ -182,7 +182,7 @@ export default function LandingPage() {
                 For everyone. <span className="italic text-gold-300 dark:text-gold-500">Proudly.</span>
               </h2>
               <p className="mt-6 text-ink-400 dark:text-ink-900">
-                {`Metlink is built for both straight and gay communities. Whether you're looking for a meaningful connection or a curated experience, you'll find verified profiles that match your orientation and preferences.`}
+                {`Meetlink is built for both straight and gay communities. Whether you're looking for a meaningful connection or a curated experience, you'll find verified profiles that match your orientation and preferences.`}
               </p>
               <div className="mt-8 space-y-4">
                 <div className="flex items-start gap-3">
@@ -304,7 +304,7 @@ export default function LandingPage() {
           <h2 className="font-display text-3xl text-ink-50 dark:text-ink-950">A few things people ask us.</h2>
           <div className="mt-10 space-y-4">
             <details className="card group">
-              <summary className="cursor-pointer text-ink-50 dark:text-ink-950 marker:text-gold-400">Is Metlink free to join?</summary>
+              <summary className="cursor-pointer text-ink-50 dark:text-ink-950 marker:text-gold-400">Is Meetlink free to join?</summary>
               <p className="mt-3 text-sm text-ink-400 dark:text-ink-600">
                 Yes —  login, browsing,  are free. Premium unlocks unlimited likes, advanced filters, and more.
               </p>
