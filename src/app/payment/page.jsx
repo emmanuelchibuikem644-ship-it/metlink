@@ -67,14 +67,15 @@ function PaymentContent() {
   const router = useRouter();
 
   const [profileInfo, setProfileInfo] = useState(() => {
-    if (typeof window === "undefined") return { id: null, name: "", avatar: "", country: "" };
+    if (typeof window === "undefined") return { id: null, name: "", avatar: "", country: "", priceCents: 0 };
     const id = window.sessionStorage.getItem("subscribe_to_profile_id");
     const name = window.sessionStorage.getItem("subscribe_to_profile_name");
     const avatar = window.sessionStorage.getItem("subscribe_to_profile_avatar");
     const country = window.sessionStorage.getItem("subscribe_to_profile_country") || "";
+    const priceCents = Number(window.sessionStorage.getItem("subscribe_to_profile_price_cents") || 0);
     return id
-      ? { id: Number(id), name: name || "Profile", avatar: avatar || "", country }
-      : { id: null, name: "", avatar: "", country };
+      ? { id: Number(id), name: name || "Profile", avatar: avatar || "", country, priceCents }
+      : { id: null, name: "", avatar: "", country, priceCents: 0 };
   });
 
   // Per-profile pricing loaded from the backend (set in admin)
@@ -114,9 +115,13 @@ function PaymentContent() {
       ]
     : [];
 
-  const initialFeeDisplay = profilePrice
-    ? formatPriceCents(profilePrice.initial_price_cents, profileInfo.country)
-    : "";
+  // The initial unlock fee = the profile's actual price (shown on the profile page),
+  // falling back to the backend's configured initial price if not set.
+  const initialFeeCents = profileInfo.priceCents > 0
+    ? profileInfo.priceCents
+    : (profilePrice ? profilePrice.initial_price_cents : 0);
+
+  const initialFeeDisplay = formatPriceCents(initialFeeCents, profileInfo.country);
 
   // Load the profile's price from the backend
   useEffect(() => {
@@ -205,7 +210,7 @@ function PaymentContent() {
     setError("");
     try {
       // Crypto pays the INITIAL unlock fee (one-time), not the recurring amount
-      const initialCents = profilePrice ? profilePrice.initial_price_cents : 0;
+      const initialCents = initialFeeCents;
       const res = await api.createCryptoPayment({
         coin: selectedCoin.id,
         amount_cents: initialCents,
@@ -411,7 +416,7 @@ function PaymentContent() {
 
   // ── Step: Crypto coin selection ──
   if (step === "crypto-select") {
-    const cryptoPriceDisplay = profilePrice ? formatPriceCents(profilePrice.initial_price_cents, profileInfo.country) : "";
+    const cryptoPriceDisplay = formatPriceCents(initialFeeCents, profileInfo.country);
     return (
       <div className="min-h-screen bg-ink-950 px-4 py-12 sm:px-6 dark:bg-white">
         <div className="mx-auto max-w-lg">
@@ -425,42 +430,13 @@ function PaymentContent() {
             <div className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">{error}</div>
           )}
 
-          {/* ── Video tutorial ── */}
-          <div className="mt-6 overflow-hidden rounded-2xl border border-white/10 bg-ink-900/60 dark:border-ink-200 dark:bg-ink-100/60">
-            <div className="flex items-center gap-3 border-b border-white/10 px-4 py-3 dark:border-ink-200">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-red-500/10">
-                <ExternalLink className="h-4 w-4 text-red-400" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-ink-50 dark:text-ink-950">📺 Watch how to pay with crypto</p>
-                <p className="text-xs text-ink-400 dark:text-ink-600">Step-by-step video tutorial</p>
-              </div>
-            </div>
-            <div className="p-4">
-              <div className="aspect-video w-full overflow-hidden rounded-xl bg-ink-950 dark:bg-white">
-                <iframe
-                  width="100%"
-                  height="100%"
-                  src="https://www.youtube.com/embed/1Vy948MVCig"
-                  title="How to buy crypto with card on Changelly"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-              <p className="mt-3 text-xs text-ink-400 dark:text-ink-600">
-                Watch this short video to learn how to send crypto from your wallet app (Trust Wallet, Binance, Coinbase, etc.)
-              </p>
-            </div>
-          </div>
-
           {/* ── Step-by-step instructions ── */}
           <div className="mt-6 rounded-2xl border border-white/10 bg-ink-900/60 p-5 dark:border-ink-200 dark:bg-ink-100/60">
             <p className="text-sm font-semibold text-ink-50 dark:text-ink-950">📋 How to pay with crypto on Changelly — Step by Step</p>
             <div className="mt-4 space-y-3">
               {[
                 { n: "1", t: "Select your coin below", d: `Choose ${selectedCoin.fullName} (${selectedCoin.symbol}) — BTC, Ethereum, or USDT` },
-                { n: "2", t: `Tap "Buy ${selectedCoin.symbol} with card on Changelly"`, d: "This opens Changelly in a new tab, exactly as shown in the video above" },
+                { n: "2", t: `Tap "Buy ${selectedCoin.symbol} with card on Changelly"`, d: "This opens Changelly in a new tab where you can pay with your card" },
                 { n: "3", t: `Enter the amount to buy (${cryptoPriceDisplay})`, d: `Buy at least ${cryptoPriceDisplay} worth of ${selectedCoin.symbol}. Changelly lets you pay with your Visa/Mastercard.` },
                 { n: "4", t: `Send the crypto straight to our ${selectedCoin.network} address`, d: "On Changelly, enter the wallet address shown on the next page and select the exact network (BTC, ERC20, or TRC20)" },
                 { n: "5", t: "Confirm the purchase", d: "Changelly sends your crypto to the address automatically once the payment is confirmed" },
@@ -522,7 +498,7 @@ function PaymentContent() {
   // ── Step: Crypto payment instructions (professional deposit page) ──
   if (step === "crypto") {
     const wallet = WALLET_ADDRESSES[selectedCoin.id];
-    const cryptoPriceDisplay = profilePrice ? formatPriceCents(profilePrice.initial_price_cents, profileInfo.country) : "";
+    const cryptoPriceDisplay = formatPriceCents(initialFeeCents, profileInfo.country);
     return (
       <div className="min-h-screen bg-ink-950 px-4 py-12 sm:px-6 dark:bg-white">
         <div className="mx-auto max-w-lg">

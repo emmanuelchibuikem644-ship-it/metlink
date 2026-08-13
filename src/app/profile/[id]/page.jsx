@@ -19,6 +19,7 @@ function ProfileContent({ profileId }) {
   const { user } = useAuth();
   const [liked, setLiked] = useState(false);
   const [showModal, setShowModal] = useState(null);
+  const [showVideoModal, setShowVideoModal] = useState(null);
   const [loading, setLoading] = useState(false);
   const [likeLoading, setLikeLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -81,6 +82,8 @@ function ProfileContent({ profileId }) {
     window.sessionStorage.setItem("subscribe_to_profile_name", profile.displayName);
     window.sessionStorage.setItem("subscribe_to_profile_avatar", profile.avatar);
     window.sessionStorage.setItem("subscribe_to_profile_country", profile.country || "");
+    // Store the profile's actual price so the payment page shows the same amount
+    window.sessionStorage.setItem("subscribe_to_profile_price_cents", String(profile.price_cents || 0));
 
     router.push("/payment");
   }
@@ -201,7 +204,9 @@ function ProfileContent({ profileId }) {
                     onClick={() => {
                       if (isLocked) {
                         handleSubscribe();
-                      } else if (!isVideo) {
+                      } else if (isVideo) {
+                        setShowVideoModal(photo);
+                      } else {
                         setShowModal(photo);
                       }
                     }}
@@ -214,12 +219,6 @@ function ProfileContent({ profileId }) {
                           playsInline
                           preload="metadata"
                           className={`h-full w-full object-cover transition duration-300 group-hover:scale-105 ${isLocked ? "blur-xl" : ""}`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (!isLocked) {
-                              e.currentTarget.paused ? e.currentTarget.play() : e.currentTarget.pause();
-                            }
-                          }}
                         />
                       ) : (
                         <Image 
@@ -252,6 +251,27 @@ function ProfileContent({ profileId }) {
               <Image src={showModal} alt="Profile photo" width={1200} height={1200} className="max-h-[85vh] w-auto rounded-2xl object-contain" />
               <button
                 onClick={() => setShowModal(null)}
+                className="absolute -top-4 -right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white text-ink-950 shadow-lg"
+              >
+                <MdClose className="h-6 w-6" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Video lightbox */}
+        {showVideoModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4" onClick={() => setShowVideoModal(null)}>
+            <div className="relative max-h-[90vh] max-w-4xl">
+              <video
+                src={showVideoModal}
+                controls
+                autoPlay
+                playsInline
+                className="max-h-[85vh] w-full rounded-2xl object-contain"
+              />
+              <button
+                onClick={() => setShowVideoModal(null)}
                 className="absolute -top-4 -right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white text-ink-950 shadow-lg"
               >
                 <MdClose className="h-6 w-6" />
