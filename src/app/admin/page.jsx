@@ -379,10 +379,10 @@ function AdminDashboard() {
         )}
 
         {/* ── Tab navigation ── */}
-        <div className="mt-10 flex gap-6 border-b border-white/10">
+        <div className="mt-10 flex gap-2 overflow-x-auto border-b border-white/10 pb-px [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <button
             onClick={() => setActiveTab("users")}
-            className={`pb-3 text-sm font-medium transition ${
+            className={`shrink-0 whitespace-nowrap px-3 pb-3 text-sm font-medium transition ${
               activeTab === "users" ? "border-b-2 border-gold-400 text-gold-400" : "text-ink-400 hover:text-ink-50"
             }`}
           >
@@ -390,7 +390,7 @@ function AdminDashboard() {
           </button>
           <button
             onClick={() => setActiveTab("likes")}
-            className={`pb-3 text-sm font-medium transition ${
+            className={`shrink-0 whitespace-nowrap px-3 pb-3 text-sm font-medium transition ${
               activeTab === "likes" ? "border-b-2 border-gold-400 text-gold-400" : "text-ink-400 hover:text-ink-50"
             }`}
           >
@@ -398,7 +398,7 @@ function AdminDashboard() {
           </button>
           <button
             onClick={() => setActiveTab("subs")}
-            className={`pb-3 text-sm font-medium transition ${
+            className={`shrink-0 whitespace-nowrap px-3 pb-3 text-sm font-medium transition ${
               activeTab === "subs" ? "border-b-2 border-gold-400 text-gold-400" : "text-ink-400 hover:text-ink-50"
             }`}
           >
@@ -406,7 +406,7 @@ function AdminDashboard() {
           </button>
           <button
             onClick={() => setActiveTab("chats")}
-            className={`pb-3 text-sm font-medium transition ${
+            className={`shrink-0 whitespace-nowrap px-3 pb-3 text-sm font-medium transition ${
               activeTab === "chats" ? "border-b-2 border-gold-400 text-gold-400" : "text-ink-400 hover:text-ink-50"
             }`}
           >
@@ -414,7 +414,7 @@ function AdminDashboard() {
           </button>
           <button
             onClick={() => setActiveTab("bookings")}
-            className={`pb-3 text-sm font-medium transition ${
+            className={`shrink-0 whitespace-nowrap px-3 pb-3 text-sm font-medium transition ${
               activeTab === "bookings" ? "border-b-2 border-gold-400 text-gold-400" : "text-ink-400 hover:text-ink-50"
             }`}
           >
@@ -422,7 +422,7 @@ function AdminDashboard() {
           </button>
           <button
             onClick={() => setActiveTab("crypto")}
-            className={`pb-3 text-sm font-medium transition ${
+            className={`shrink-0 whitespace-nowrap px-3 pb-3 text-sm font-medium transition ${
               activeTab === "crypto" ? "border-b-2 border-gold-400 text-gold-400" : "text-ink-400 hover:text-ink-50"
             }`}
           >
@@ -430,7 +430,7 @@ function AdminDashboard() {
           </button>
           <button
             onClick={() => setActiveTab("support")}
-            className={`pb-3 text-sm font-medium transition ${
+            className={`shrink-0 whitespace-nowrap px-3 pb-3 text-sm font-medium transition ${
               activeTab === "support" ? "border-b-2 border-gold-400 text-gold-400" : "text-ink-400 hover:text-ink-50"
             }`}
           >
