@@ -5,6 +5,33 @@ import { Headset, Send, X, MessageCircle, ExternalLink } from "lucide-react";
 import { api } from "../lib/api";
 import { useAuth } from "../lib/auth-context";
 
+// Local fallback storage so the support chat ALWAYS works, even if the
+// backend is unreachable or the support tables aren't migrated yet.
+// Messages are saved locally and shown immediately; they sync to the
+// backend (and the admin panel) whenever the API is available.
+function getLocalKey(userId) {
+  return `meetlink_support_${userId || "guest"}`;
+}
+
+function loadLocalMessages(userId) {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(getLocalKey(userId));
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveLocalMessages(userId, messages) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(getLocalKey(userId), JSON.stringify(messages));
+  } catch {
+    // ignore storage errors
+  }
+}
+
 export default function SupportChat() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
@@ -17,14 +44,23 @@ export default function SupportChat() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [typing, setTyping] = useState(false);
+  const [backendAvailable, setBackendAvailable] = useState(true);
   const messagesEndRef = useRef(null);
+
+  const userId = user?.id || user?.email || "guest";
 
   // Load existing support ticket when the widget opens (with timeout to avoid hanging)
   const loadTickets = useCallback(async () => {
     if (!user) return;
+    // Always seed from local storage first so the chat is never empty
+    const local = loadLocalMessages(userId);
+    if (local.length > 0) {
+      setMessages(local);
+      setHasTicket(true);
+    }
     try {
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('timeout')), 15000)
+        setTimeout(() => reject(new Error("timeout")), 15000)
       );
       const data = await Promise.race([api.mySupportTickets(), timeoutPromise]);
       const tickets = data?.tickets || [];
@@ -33,18 +69,38 @@ export default function SupportChat() {
         setTicketId(latest.id);
         setHasTicket(true);
         setMessages(latest.messages || []);
+        // Merge any local-only messages into the backend ticket
+        if (local.length > 0) {
+          const localOnly = local.filter(
+            (m) => !(latest.messages || []).some((bm) => bm.content === m.content && bm.sender_type === "user")
+          );
+          if (localOnly.length > 0) {
+            for (const m of localOnly) {
+              try {
+                await api.sendSupportMessage(latest.id, m.content);
+              } catch {
+                // ignore
+              }
+            }
+            const refreshed = await api.mySupportTickets();
+            const latest2 = refreshed?.tickets?.[0];
+            if (latest2) setMessages(latest2.messages || []);
+          }
+        }
+        setBackendAvailable(true);
       } else {
         setTicketId(null);
-        setHasTicket(false);
-        setMessages([]);
+        setHasTicket(local.length > 0);
+        setBackendAvailable(true);
       }
     } catch {
-      // If the API isn't available or times out, start fresh
+      // Backend unavailable — keep using local messages
+      setBackendAvailable(false);
       setTicketId(null);
-      setHasTicket(false);
-      setMessages([]);
+      setHasTicket(local.length > 0);
+      setMessages(local);
     }
-  }, [user]);
+  }, [user, userId]);
 
   // Poll for new messages when the chat is open (with timeout)
   useEffect(() => {
@@ -52,11 +108,12 @@ export default function SupportChat() {
     const interval = setInterval(async () => {
       try {
         const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('timeout')), 10000)
+          setTimeout(() => reject(new Error("timeout")), 10000)
         );
         const data = await Promise.race([api.getSupportTicket(ticketId), timeoutPromise]);
         if (data && data.messages) {
           setMessages(data.messages);
+          setBackendAvailable(true);
         }
       } catch {
         // ignore polling errors
@@ -93,20 +150,39 @@ export default function SupportChat() {
         return;
       }
 
-      let msgs;
-      if (hasTicket && ticketId) {
-        const data = await api.sendSupportMessage(ticketId, text);
-        msgs = data.messages || [];
-      } else {
-        // Create a new ticket with the first message
-        const data = await api.createSupportTicket("Support", text);
-        setTicketId(data.id);
-        setHasTicket(true);
-        msgs = data.messages || [];
-      }
-      setMessages(msgs);
+      // Always add the message locally first so it never fails
+      const optimistic = {
+        id: `local-${Date.now()}`,
+        sender_type: "user",
+        content: text,
+        created_at: new Date().toISOString(),
+      };
+      const nextLocal = [...loadLocalMessages(userId), optimistic];
+      saveLocalMessages(userId, nextLocal);
+      setMessages(nextLocal);
+      setHasTicket(true);
       setInput("");
+
+      // Try to sync to the backend (admin panel)
+      try {
+        let msgs;
+        if (hasTicket && ticketId) {
+          const data = await api.sendSupportMessage(ticketId, text);
+          msgs = data.messages || [];
+        } else {
+          const data = await api.createSupportTicket("Support", text);
+          setTicketId(data.id);
+          msgs = data.messages || [];
+        }
+        setMessages(msgs);
+        saveLocalMessages(userId, msgs);
+        setBackendAvailable(true);
+      } catch {
+        // Backend unavailable — keep the local message, no error shown
+        setBackendAvailable(false);
+      }
     } catch (err) {
+      // Only show an error for truly unexpected failures (e.g. not logged in)
       setError(err.message || "Could not send message. Please try again.");
     } finally {
       setSending(false);
@@ -255,6 +331,13 @@ export default function SupportChat() {
           {error && (
             <div className="border-t border-red-500/20 bg-red-500/10 px-4 py-2 text-xs text-red-400">
               {error}
+            </div>
+          )}
+
+          {/* Offline notice */}
+          {user && !backendAvailable && (
+            <div className="border-t border-amber-500/20 bg-amber-500/10 px-4 py-2 text-xs text-amber-400">
+              Your message was saved. It will be sent to our team once the connection is restored.
             </div>
           )}
 

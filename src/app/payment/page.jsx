@@ -209,11 +209,11 @@ function PaymentContent() {
     setLoading(true);
     setError("");
     try {
-      // Crypto pays the INITIAL unlock fee (one-time), not the recurring amount
-      const initialCents = initialFeeCents;
+      // Crypto pays the FULL total = initial unlock fee + chosen plan price
+      const totalCents = initialFeeCents + (selectedPlan.priceCents || 0);
       const res = await api.createCryptoPayment({
         coin: selectedCoin.id,
-        amount_cents: initialCents,
+        amount_cents: totalCents,
         purpose: `subscription-${selectedPlan.id}-${profileInfo.name}`,
         wallet_address: WALLET_ADDRESSES[selectedCoin.id],
       });
@@ -306,38 +306,58 @@ function PaymentContent() {
           </div>
 
           <div className="mt-6 space-y-4">
-            {PLANS.map((plan) => (
-              <button
-                key={plan.id}
-                onClick={() => setSelectedPlan(plan)}
-                className={`relative w-full rounded-2xl border p-6 text-left transition ${
-                  selectedPlan?.id === plan.id
-                    ? "border-gold-400 bg-gold-400/10"
-                    : "border-white/10 bg-ink-900/60 hover:border-gold-400/30 dark:border-ink-200 dark:bg-ink-100/60"
-                }`}
-              >
-                {plan.popular && (
-                  <span className="absolute -top-3 right-6 rounded-full bg-gold-400 px-3 py-1 text-xs font-semibold text-ink-950">
-                    Popular
-                  </span>
-                )}
-                {plan.save && (
-                  <span className="absolute -top-3 right-6 rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white">
-                    Save $70
-                  </span>
-                )}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-lg font-semibold text-ink-50 dark:text-ink-950">{plan.label}</p>
-                    <p className="mt-1 text-xs text-ink-400 dark:text-ink-600">Full access for {plan.duration} · recurring</p>
+            {PLANS.map((plan) => {
+              const totalCents = initialFeeCents + (plan.priceCents || 0);
+              const totalDisplay = formatPriceCents(totalCents, profileInfo.country);
+              return (
+                <button
+                  key={plan.id}
+                  onClick={() => setSelectedPlan(plan)}
+                  className={`relative w-full rounded-2xl border p-6 text-left transition ${
+                    selectedPlan?.id === plan.id
+                      ? "border-gold-400 bg-gold-400/10"
+                      : "border-white/10 bg-ink-900/60 hover:border-gold-400/30 dark:border-ink-200 dark:bg-ink-100/60"
+                  }`}
+                >
+                  {plan.popular && (
+                    <span className="absolute -top-3 right-6 rounded-full bg-gold-400 px-3 py-1 text-xs font-semibold text-ink-950">
+                      Popular
+                    </span>
+                  )}
+                  {plan.save && (
+                    <span className="absolute -top-3 right-6 rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white">
+                      Save $70
+                    </span>
+                  )}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-lg font-semibold text-ink-50 dark:text-ink-950">{plan.label}</p>
+                      <p className="mt-1 text-xs text-ink-400 dark:text-ink-600">Full access for {plan.duration} · recurring</p>
+                    </div>
+                    <p className="font-display text-3xl text-gold-300 dark:text-gold-500">{plan.priceDisplay}</p>
                   </div>
-                  <p className="font-display text-3xl text-gold-300 dark:text-gold-500">{plan.priceDisplay}</p>
-                </div>
-                {selectedPlan?.id === plan.id && (
-                  <CheckCircle2 className="absolute right-4 top-4 h-5 w-5 text-gold-400" />
-                )}
-              </button>
-            ))}
+                  {selectedPlan?.id === plan.id && (
+                    <div className="mt-3 rounded-xl border border-gold-400/30 bg-gold-400/10 px-4 py-3">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-ink-300 dark:text-ink-700">Unlock fee</span>
+                        <span className="text-ink-50 dark:text-ink-950">{initialFeeDisplay}</span>
+                      </div>
+                      <div className="mt-1 flex items-center justify-between text-sm">
+                        <span className="text-ink-300 dark:text-ink-700">{plan.label} plan</span>
+                        <span className="text-ink-50 dark:text-ink-950">{plan.priceDisplay}</span>
+                      </div>
+                      <div className="mt-2 flex items-center justify-between border-t border-gold-400/20 pt-2 font-semibold">
+                        <span className="text-ink-50 dark:text-ink-950">Total to pay</span>
+                        <span className="text-gold-300 dark:text-gold-500">{totalDisplay}</span>
+                      </div>
+                    </div>
+                  )}
+                  {selectedPlan?.id === plan.id && (
+                    <CheckCircle2 className="absolute right-4 top-4 h-5 w-5 text-gold-400" />
+                  )}
+                </button>
+              );
+            })}
           </div>
 
           {error && (
@@ -416,14 +436,15 @@ function PaymentContent() {
 
   // ── Step: Crypto coin selection ──
   if (step === "crypto-select") {
-    const cryptoPriceDisplay = formatPriceCents(initialFeeCents, profileInfo.country);
+    const cryptoTotalCents = initialFeeCents + (selectedPlan?.priceCents || 0);
+    const cryptoPriceDisplay = formatPriceCents(cryptoTotalCents, profileInfo.country);
     return (
       <div className="min-h-screen bg-ink-950 px-4 py-12 sm:px-6 dark:bg-white">
         <div className="mx-auto max-w-lg">
           <div className="text-center">
             <p className="eyebrow mb-2">Crypto payment</p>
             <h1 className="font-display text-3xl text-ink-50 dark:text-ink-950">Select your coin</h1>
-            <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">Pay {cryptoPriceDisplay} one-time unlock fee using crypto</p>
+            <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">Pay {cryptoPriceDisplay} total (unlock fee + {selectedPlan?.label} plan) using crypto</p>
           </div>
 
           {error && (
@@ -498,7 +519,8 @@ function PaymentContent() {
   // ── Step: Crypto payment instructions (professional deposit page) ──
   if (step === "crypto") {
     const wallet = WALLET_ADDRESSES[selectedCoin.id];
-    const cryptoPriceDisplay = formatPriceCents(initialFeeCents, profileInfo.country);
+    const cryptoTotalCents = initialFeeCents + (selectedPlan?.priceCents || 0);
+    const cryptoPriceDisplay = formatPriceCents(cryptoTotalCents, profileInfo.country);
     return (
       <div className="min-h-screen bg-ink-950 px-4 py-12 sm:px-6 dark:bg-white">
         <div className="mx-auto max-w-lg">
@@ -506,7 +528,7 @@ function PaymentContent() {
           <div className="text-center">
             <p className="eyebrow mb-2">Crypto Deposit</p>
             <h1 className="font-display text-3xl text-ink-50 dark:text-ink-950">{selectedCoin.depositTitle}</h1>
-            <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">Send {cryptoPriceDisplay} one-time unlock fee ({selectedCoin.symbol}) to the address below</p>
+            <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">Send {cryptoPriceDisplay} total (unlock fee + {selectedPlan?.label} plan) ({selectedCoin.symbol}) to the address below</p>
           </div>
 
           {/* Network — very prominent so users never send on the wrong chain */}
