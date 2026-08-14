@@ -168,7 +168,7 @@ function ProfileContent({ profileId }) {
         {/* Actions */}
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <button onClick={handleSubscribe} className="flex flex-1 items-center justify-center gap-3 rounded-full bg-gold-400 px-8 py-4 text-sm font-semibold text-ink-950 transition hover:bg-gold-300">
-            <Crown className="h-5 w-5" /> Subscribe · {formatPriceCents(profile.price_cents, profile.country)}
+            <Crown className="h-5 w-5" /> Subscribe
           </button>
           <button onClick={handleLike} disabled={likeLoading} className={`flex flex-1 items-center justify-center gap-3 rounded-full border px-8 py-4 text-sm transition ${liked ? "border-red-500/50 bg-red-500/10 text-red-400" : "border-subtle text-body hover:border-gold-400/60 hover:text-gold-300"}`}>
             <FaHeart className={`h-5 w-5 ${liked ? "text-red-400" : ""}`} /> {liked ? "Liked" : "Like Profile"}

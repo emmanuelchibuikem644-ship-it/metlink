@@ -10,18 +10,18 @@ import SubscriptionRoute from "../../components/SubscriptionRoute";
 import allProfiles from "../../data/profiles";
 
 const services = [
-  {
+ {
     id: 1,
-    name: "Basic Massage",
-    price: "$120",
+    name: "Nuru Basic Massage",
+    price: "$40",
     description: "Basic relaxation session",
     duration: "60 min",
     popular: false,
   },
   {
     id: 2,
-    name: "Premium Massage",
-    price: "$400",
+    name: "Nuru Premium Massage",
+    price: "$90",
     description: "Premium experience (erotic massage)",
     duration: "90 min",
     popular: true,
@@ -29,7 +29,7 @@ const services = [
   {
     id: 3,
     name: "BDSM Session",
-    price: "$500/hr",
+    price: "$100/hr",
     description: "Contracts also available — apply within",
     duration: "1 hour",
     popular: false,
@@ -37,7 +37,7 @@ const services = [
   {
     id: 4,
     name: "Sensual Meet",
-    price: "$150",
+    price: "$60",
     description: "Intimate and sensual experience",
     duration: "60 min",
     popular: false,
@@ -45,7 +45,7 @@ const services = [
   {
     id: 5,
     name: "VIP Session",
-    price: "$20/hr",
+    price: "$120/hr",
     description: "Professional premium session",
     duration: "Flexible",
     popular: false,
@@ -53,7 +53,7 @@ const services = [
   {
     id: 6,
     name: "Meet & Greet",
-    price: "$10/hr",
+    price: "$20/hr",
     description: "Casual meet and greet service",
     duration: "1 hour",
     popular: false,
@@ -69,7 +69,7 @@ const services = [
   {
     id: 8,
     name: "Direct Chat Access",
-    price: "Free test",
+    price: "$20",
     description: "Start a direct one-on-one chat with this person.",
     duration: "Instant access",
     popular: true,

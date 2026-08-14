@@ -199,6 +199,15 @@ export default function LandingPage() {
                     <p className="text-sm text-ink-400 dark:text-ink-900">Curated straight female profiles with verified status and premium experiences.</p>
                   </div>
                 </div>
+
+                <div className="flex items-start gap-3">
+                  <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gold-400/20 text-xs font-bold text-gold-400">B</span>
+                  <div>
+                    <p className="font-semibold text-ink-50 dark:text-ink-950">bisexual community</p>
+                    <p className="text-sm text-ink-400 dark:text-ink-900">Curated bisexual profiles with verified status and premium experiences.</p>
+                  </div>
+                </div>
+
                 <div className="flex items-start gap-3">
                   <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-xs font-bold text-emerald-400">✓</span>
                   <div>
@@ -234,7 +243,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-7xl px-6">
           <p className="eyebrow mb-3">The process</p>
           <h2 className="font-display text-3xl text-ink-50 dark:text-ink-950 md:text-4xl">
-            Three steps to your next real conversation.
+            Six steps to your next real conversation.
           </h2>
           <div className="mt-14 grid grid-cols-1 gap-10 md:grid-cols-3">
             <div>
@@ -244,15 +253,37 @@ export default function LandingPage() {
             </div>
             <div>
               <div className="font-display text-4xl italic text-gold-400/60 dark:text-gold-400/70">02</div>
-              <h3 className="mt-3 text-lg text-ink-50 dark:text-ink-950">Discover &amp; match</h3>
-              <p className="mt-2 text-sm text-ink-400 dark:text-ink-900">Browse, filter, and like the profiles that catch your eye. When it&apos;s mutual, you match.</p>
+              <h3 className="mt-3 text-lg text-ink-50 dark:text-ink-950">Discover &amp; Subscribe</h3>
+              <p className="mt-2 text-sm text-ink-400 dark:text-ink-900">Browse, profile,Browse profiles, discover companions who catch your interest, and subscribe to unlock the next step. &apos;Find the right connection and get ready to start talking.</p>
             </div>
             <div>
               <div className="font-display text-4xl italic text-gold-400/60 dark:text-gold-400/70">03</div>
               <h3 className="mt-3 text-lg text-ink-50 dark:text-ink-950">Start talking</h3>
-              <p className="mt-2 text-sm text-ink-400 dark:text-ink-900">Secure real-time messaging keeps the conversation going, wherever it leads.</p>
+              <p className="mt-2 text-sm text-ink-400 dark:text-ink-900">Choose a service, select your preferred date and time, <br /> and make your booking securely.
+        Our simple booking process makes it easy to arrange your appointment and receive confirmation without unnecessary hassle.</p>
             </div>
-          </div>
+          <div>
+           <div className="font-display text-4xl italic text-gold-400/60 dark:text-gold-400/70">04</div>
+              <h3 className="mt-3 text-lg text-ink-50 dark:text-ink-950">Confirmation & Connect</h3>
+              <p className="mt-2 text-sm text-ink-400 dark:text-ink-900">Get confirmed and stay connected.
+         Once your booking is confirmed, receive the details you need and use secure messaging to communicate and keep everything organized before your appointment.</p>
+            </div>
+          <div>
+           <div className="font-display text-4xl italic text-gold-400/60 dark:text-gold-400/70">05</div>
+              <h3 className="mt-3 text-lg text-ink-50 dark:text-ink-950">Start talking</h3>
+              <p className="mt-2 text-sm text-ink-400 dark:text-ink-900">Choose a service, select your preferred date and time, <br /> and make your booking securely.
+          Our simple booking process makes it easy to arrange your appointment and receive confirmation without unnecessary hassle.</p>
+            </div>
+
+           <div className="font-display text-4xl italic text-gold-400/60 dark:text-gold-400/70">03</div>
+              <h3 className="mt-3 text-lg text-ink-50 dark:text-ink-950">Start talking</h3>
+              <p className="mt-2 text-sm text-ink-400 dark:text-ink-900">Connect through secure real-time messaging, discuss the details, and keep the conversation going from the moment you connect.</p>
+            </div>
+            <div>
+           <div className="font-display text-4xl italic text-gold-400/60 dark:text-gold-400/70">03</div>
+              <h3 className="mt-3 text-lg text-ink-50 dark:text-ink-950"> Meet Your Companion & Connect</h3>
+              <p className="mt-2 text-sm text-ink-400 dark:text-ink-900">Take the conversation beyond the screen and enjoy a meaningful connection in person. Coordinate the details, meet at your agreed time and place, and enjoy a comfortable experience built around genuine connection and mutual respect.</p>
+            </div>
         </div>
       </section>
 
@@ -264,21 +295,32 @@ export default function LandingPage() {
           <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-3">
             <div className="card">
               <p className="text-sm italic text-ink-400 dark:text-ink-900">
-                &ldquo;I&apos;d tried every app. Meetlink  was the first one where the conversations didn&apos;t fizzle out after &apos;hey&apos;.&rdquo;
+                “From the moment we met, everything felt effortless. The conversation, the atmosphere, the attention it was an experience I’ll genuinely remember. 
+                I left feeling relaxed, appreciated, and already looking forward to seeing him again.”
               </p>
               <p className="mt-4 text-sm text-gold-300 dark:text-gold-700">— Maya, 29</p>
             </div>
             <div className="card">
               <p className="text-sm italic text-ink-400 dark:text-ink-900">
-                &ldquo;The verification badges genuinely changed how safe I felt reaching out to people first.&rdquo;
+                “I wasn’t expecting the evening to be that memorable. We talked, laughed, enjoyed each other’s company, and the chemistry was undeniable. It felt less like a booking and more like meeting someone I had known for much longer.”
               </p>
               <p className="mt-4 text-sm text-gold-300 dark:text-gold-700">— Daniel, 34</p>
             </div>
             <div className="card">
               <p className="text-sm italic text-ink-400 dark:text-ink-900">
-                &ldquo;Met my partner here eight months ago. We still joke about our terrible first-message icebreakers.&rdquo;
+               “The best part was the attention to detail. Everything felt smooth from the first conversation to the moment we said goodbye. 
+               My companion made me feel completely comfortable, valued, and special. 
+               It was an experience I won’t forget.”
               </p>
-              <p className="mt-4 text-sm text-gold-300 dark:text-gold-700">— Priya &amp; Alex</p>
+              <p className="mt-4 text-sm text-gold-300 dark:text-gold-700">— Priya</p>
+            </div>
+            <div className="card">
+              <p className="text-sm italic text-ink-400 dark:text-ink-900">
+              “I booked because I wanted great company and an evening that felt different. 
+              What I got was so much more a captivating personality, effortless conversation, and an experience that exceeded my expectations. 
+              I’m definitely coming back.”
+              </p>
+              <p className="mt-4 text-sm text-gold-300 dark:text-gold-700">—  Sophie, 31</p>
             </div>
           </div>
         </div>

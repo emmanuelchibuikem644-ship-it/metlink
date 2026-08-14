@@ -1,18 +1,15 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { CreditCard, Sparkles, CheckCircle2, ArrowRight, Wallet, Copy, ExternalLink, QrCode } from "lucide-react";
+import { CreditCard, Sparkles, CheckCircle2, ArrowRight, Copy, ExternalLink, QrCode } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { api } from "../../lib/api";
 import ProtectedRoute from "../../components/ProtectedRoute";
-import { getCountryCurrency, formatPriceCents } from "../../data/currency";
+import { formatPriceCents } from "../../data/currency";
 
 // ── Crypto coins ────────────────────────────────────────────
-// Each coin has a clear deposit title + exact network label.
-// IMPORTANT: These network labels are shown prominently so users never
-// send funds on the wrong blockchain (which would lose their deposit).
 const COINS = [
   {
     id: "bitcoin",
@@ -59,111 +56,65 @@ const WALLET_ADDRESSES = {
   usdt: "TDBXXkAbmU453Bn9t4Hj9n5yDCcAEN9WxB",
 };
 
-// ── Card payment ───────────────────────────────────────────
-// (Bank transfer removed — only card and crypto are available)
-const CARD_NOTE = "Pay securely with Paystack — Visa, Mastercard, Verve";
+// ── Fixed subscription pricing ─────────────────────────────
+// Hardcoded (no backend dependency) so subscription works for EVERY profile.
+// The unlock fee is always $60; the chosen plan price is added on top.
+const UNLOCK_FEE_CENTS = 6000; // $60 one-time unlock fee
+
+const PLANS = [
+  {
+    id: "14days",
+    label: "14 Days",
+    priceCents: 1400, // $14
+    priceDisplay: "$14",
+    duration: "14 days",
+  },
+  {
+    id: "month",
+    label: "1 Month",
+    priceCents: 3500, // $35
+    priceDisplay: "$35",
+    duration: "1 month",
+    popular: true,
+  },
+  {
+    id: "year",
+    label: "1 Year",
+    priceCents: 33600, // $336 (20% off)
+    priceDisplay: "$336",
+    duration: "1 year",
+    save: true,
+    saveLabel: "20% OFF",
+  },
+];
 
 function PaymentContent() {
   const router = useRouter();
 
-  const [profileInfo, setProfileInfo] = useState(() => {
-    if (typeof window === "undefined") return { id: null, name: "", avatar: "", country: "", priceCents: 0 };
+  const [profileInfo] = useState(() => {
+    if (typeof window === "undefined") return { id: null, name: "", avatar: "", country: "" };
     const id = window.sessionStorage.getItem("subscribe_to_profile_id");
     const name = window.sessionStorage.getItem("subscribe_to_profile_name");
     const avatar = window.sessionStorage.getItem("subscribe_to_profile_avatar");
     const country = window.sessionStorage.getItem("subscribe_to_profile_country") || "";
-    const priceCents = Number(window.sessionStorage.getItem("subscribe_to_profile_price_cents") || 0);
     return id
-      ? { id: Number(id), name: name || "Profile", avatar: avatar || "", country, priceCents }
-      : { id: null, name: "", avatar: "", country, priceCents: 0 };
+      ? { id: Number(id), name: name || "Profile", avatar: avatar || "", country }
+      : { id: null, name: "", avatar: "", country };
   });
 
-  // Per-profile pricing loaded from the backend (set in admin)
-  const [profilePrice, setProfilePrice] = useState(null);
-  const [priceLoading, setPriceLoading] = useState(true);
-  const [priceError, setPriceError] = useState("");
-
-  // Currency derived from the profile's country
-  const currency = getCountryCurrency(profileInfo.country);
-
-  // Build the plan list from the profile's admin-set prices (in local currency)
-  const PLANS = profilePrice
-    ? [
-        {
-          id: "14days",
-          label: "14 Days",
-          priceCents: profilePrice.recurring_14day_price_cents,
-          priceDisplay: formatPriceCents(profilePrice.recurring_14day_price_cents, profileInfo.country),
-          duration: "14 days",
-        },
-        {
-          id: "month",
-          label: "1 Month",
-          priceCents: profilePrice.recurring_monthly_price_cents,
-          priceDisplay: formatPriceCents(profilePrice.recurring_monthly_price_cents, profileInfo.country),
-          duration: "1 month",
-          popular: true,
-        },
-        {
-          id: "year",
-          label: "1 Year",
-          priceCents: profilePrice.recurring_yearly_price_cents,
-          priceDisplay: formatPriceCents(profilePrice.recurring_yearly_price_cents, profileInfo.country),
-          duration: "1 year",
-          save: true,
-        },
-      ]
-    : [];
-
-  // The initial unlock fee = the profile's actual price (shown on the profile page),
-  // falling back to the backend's configured initial price if not set.
-  const initialFeeCents = profileInfo.priceCents > 0
-    ? profileInfo.priceCents
-    : (profilePrice ? profilePrice.initial_price_cents : 0);
-
-  const initialFeeDisplay = formatPriceCents(initialFeeCents, profileInfo.country);
-
-  // Load the profile's price from the backend
-  useEffect(() => {
-    if (!profileInfo.id) {
-      setPriceLoading(false);
-      setPriceError("No profile selected. Please go back and choose a profile to subscribe to.");
-      return;
-    }
-    setPriceLoading(true);
-    api.getProfilePrice(profileInfo.id)
-      .then((p) => {
-        setProfilePrice(p);
-        // Auto-select the first plan (14 days) once prices are known
-        setSelectedPlan({
-          id: "14days",
-          label: "14 Days",
-          priceCents: p.recurring_14day_price_cents,
-          priceDisplay: formatPriceCents(p.recurring_14day_price_cents, profileInfo.country),
-          duration: "14 days",
-        });
-      })
-      .catch((err) => {
-        setPriceError(err.message);
-        setProfilePrice(null);
-      })
-      .finally(() => setPriceLoading(false));
-  }, [profileInfo.id, profileInfo.country]);
-
-  const [step, setStep] = useState("plan"); // plan → method → paystack | crypto-select | crypto → success
-  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [step, setStep] = useState("plan"); // plan → method → crypto-select → crypto → success
+  const [selectedPlan, setSelectedPlan] = useState(PLANS[0]);
   const [selectedCoin, setSelectedCoin] = useState(COINS[0]);
   const [txHash, setTxHash] = useState("");
   const [copied, setCopied] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [paystackData, setPaystackData] = useState(null);
   const [cryptoPaymentId, setCryptoPaymentId] = useState(null);
   const [verifying, setVerifying] = useState(false);
 
-  const priceDisplay = selectedPlan ? selectedPlan.priceDisplay : "";
-  const currencySymbol = currency.symbol;
+  // The one-time unlock fee is a flat $60
+  const initialFeeDisplay = formatPriceCents(UNLOCK_FEE_CENTS, profileInfo.country);
 
   function handleCopyAddress() {
     navigator.clipboard?.writeText(WALLET_ADDRESSES[selectedCoin.id]);
@@ -173,44 +124,13 @@ function PaymentContent() {
 
   function handleGoToServices() { router.push("/service"); }
 
-  // ── Paystack: initialize a transaction (card) ──
-  // Card payment is currently unavailable — show message instead
-  function handlePaystackPayment() {
-    setError("Card payment is currently unavailable. Please use Crypto to complete your payment. 🪙");
-  }
-
-  // ── Verify a Paystack transaction after redirect back ──
-  useEffect(() => {
-    // If we came back from Paystack with a reference, verify it
-    if (typeof window === "undefined") return;
-    const urlParams = new URLSearchParams(window.location.search);
-    const reference = urlParams.get("reference");
-    if (reference && profileInfo.id && selectedPlan && !paystackData) {
-      const p = selectedPlan;
-      setLoading(true);
-      setError("");
-      api.confirmPaystackPayment(reference, profileInfo.id, p.id, profileInfo.country, currencySymbol)
-        .then((res) => {
-          if (res.success) {
-            setStep("success");
-            ["subscribe_to_profile_id", "subscribe_to_profile_name", "subscribe_to_profile_avatar", "subscribe_to_profile_country"].forEach(k => window.sessionStorage.removeItem(k));
-          } else {
-            setError(res.detail || "Payment could not be verified.");
-          }
-        })
-        .catch((err) => setError(err.message))
-        .finally(() => setLoading(false));
-    }
-  }, [profileInfo.id, profileInfo.country, currencySymbol]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // ── Crypto: create payment request ──
+  // ── Crypto: create payment request (unlock fee + chosen plan) ──
   async function handleCreateCryptoPayment() {
     if (!profileInfo.id || !selectedPlan) return;
     setLoading(true);
     setError("");
     try {
-      // Crypto pays the FULL total = initial unlock fee + chosen plan price
-      const totalCents = initialFeeCents + (selectedPlan.priceCents || 0);
+      const totalCents = UNLOCK_FEE_CENTS + (selectedPlan.priceCents || 0);
       const res = await api.createCryptoPayment({
         coin: selectedCoin.id,
         amount_cents: totalCents,
@@ -241,26 +161,14 @@ function PaymentContent() {
     setVerifying(false);
   }
 
-  // ── Loading state ──
-  if (priceLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-ink-950 dark:bg-white">
-        <div className="text-center">
-          <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-gold-400 border-t-transparent" />
-          <p className="mt-4 text-sm text-ink-400 dark:text-ink-600">Loading pricing…</p>
-        </div>
-      </div>
-    );
-  }
-
   // ── No profile selected ──
-  if (!profileInfo.id || !profilePrice) {
+  if (!profileInfo.id) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-ink-950 px-4 dark:bg-white">
         <div className="mx-auto max-w-md text-center">
           <p className="text-6xl text-ink-500">😕</p>
           <h1 className="mt-4 font-display text-2xl text-ink-50 dark:text-ink-950">Unable to start subscription</h1>
-          <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">{priceError || "Please select a profile to subscribe to."}</p>
+          <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">Please select a profile to subscribe to.</p>
           <Link href="/home" className="mt-6 inline-block rounded-full bg-gold-400 px-8 py-3 text-sm font-semibold text-ink-950 transition hover:bg-gold-300">
             Browse Profiles
           </Link>
@@ -278,9 +186,6 @@ function PaymentContent() {
             <p className="eyebrow mb-2">Subscription</p>
             <h1 className="font-display text-4xl text-ink-50 dark:text-ink-950">Choose your plan</h1>
             <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">Unlock full access to {profileInfo.name || "this profile"}</p>
-            <p className="mt-1 text-xs text-ink-500 dark:text-ink-600">
-              Prices shown in {currency.currency} ({currencySymbol})
-            </p>
           </div>
 
           {profileInfo.name && (
@@ -297,17 +202,17 @@ function PaymentContent() {
             </div>
           )}
 
-          {/* Initial unlock fee notice */}
+          {/* Unlock fee notice */}
           <div className="mt-6 flex items-center gap-3 rounded-2xl border border-gold-400/30 bg-gold-400/10 p-4">
             <Sparkles className="h-5 w-5 shrink-0 text-gold-400" />
             <p className="text-sm text-ink-300 dark:text-ink-700">
-              <strong className="text-ink-50 dark:text-ink-950">{initialFeeDisplay}</strong> one-time unlock fee to access this profile. Then your recurring plan starts.
+              <strong className="text-ink-50 dark:text-ink-950">{initialFeeDisplay}</strong> one-time unlock fee to access this profile. Then your chosen plan is added on top.
             </p>
           </div>
 
           <div className="mt-6 space-y-4">
             {PLANS.map((plan) => {
-              const totalCents = initialFeeCents + (plan.priceCents || 0);
+              const totalCents = UNLOCK_FEE_CENTS + plan.priceCents;
               const totalDisplay = formatPriceCents(totalCents, profileInfo.country);
               return (
                 <button
@@ -326,13 +231,13 @@ function PaymentContent() {
                   )}
                   {plan.save && (
                     <span className="absolute -top-3 right-6 rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white">
-                      Save $70
+                      {plan.saveLabel}
                     </span>
                   )}
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-lg font-semibold text-ink-50 dark:text-ink-950">{plan.label}</p>
-                      <p className="mt-1 text-xs text-ink-400 dark:text-ink-600">Full access for {plan.duration} · recurring</p>
+                      <p className="mt-1 text-xs text-ink-400 dark:text-ink-600">Full access for {plan.duration}</p>
                     </div>
                     <p className="font-display text-3xl text-gold-300 dark:text-gold-500">{plan.priceDisplay}</p>
                   </div>
@@ -380,13 +285,15 @@ function PaymentContent() {
 
   // ── Step: Choose payment method ──
   if (step === "method") {
+    const totalCents = UNLOCK_FEE_CENTS + (selectedPlan?.priceCents || 0);
+    const totalDisplay = formatPriceCents(totalCents, profileInfo.country);
     return (
       <div className="min-h-screen bg-ink-950 px-4 py-12 sm:px-6 dark:bg-white">
         <div className="mx-auto max-w-lg">
           <div className="text-center">
             <p className="eyebrow mb-2">Payment method</p>
             <h1 className="font-display text-3xl text-ink-50 dark:text-ink-950">How would you like to pay?</h1>
-            <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">{selectedPlan.label} — {priceDisplay} · {currency.currency}</p>
+            <p className="mt-2 text-sm text-ink-400 dark:text-ink-600">{selectedPlan.label} — total {totalDisplay}</p>
           </div>
 
           {error && (
@@ -395,9 +302,7 @@ function PaymentContent() {
 
           <div className="mt-8 space-y-4">
             {/* Paystack card payment — currently unavailable */}
-            <div
-              className="flex w-full items-center gap-4 rounded-2xl border border-dashed border-white/10 bg-ink-900/40 p-5 text-left opacity-70 dark:border-ink-200 dark:bg-ink-100/40"
-            >
+            <div className="flex w-full items-center gap-4 rounded-2xl border border-dashed border-white/10 bg-ink-900/40 p-5 text-left opacity-70 dark:border-ink-200 dark:bg-ink-100/40">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-ink-800/60">
                 <CreditCard className="h-6 w-6 text-ink-500" />
               </div>
@@ -424,10 +329,6 @@ function PaymentContent() {
             </button>
           </div>
 
-          {loading && (
-            <p className="mt-4 text-center text-sm text-ink-400 dark:text-ink-600">Redirecting to Paystack…</p>
-          )}
-
           <button onClick={() => setStep("plan")} className="mt-4 block w-full text-center text-sm text-ink-400 hover:text-gold-300 transition dark:text-ink-600">Back</button>
         </div>
       </div>
@@ -436,7 +337,7 @@ function PaymentContent() {
 
   // ── Step: Crypto coin selection ──
   if (step === "crypto-select") {
-    const cryptoTotalCents = initialFeeCents + (selectedPlan?.priceCents || 0);
+    const cryptoTotalCents = UNLOCK_FEE_CENTS + (selectedPlan?.priceCents || 0);
     const cryptoPriceDisplay = formatPriceCents(cryptoTotalCents, profileInfo.country);
     return (
       <div className="min-h-screen bg-ink-950 px-4 py-12 sm:px-6 dark:bg-white">
@@ -500,15 +401,15 @@ function PaymentContent() {
             ))}
           </div>
 
-            <button
-              onClick={handleCreateCryptoPayment}
-              disabled={loading}
-              className="mt-6 flex w-full items-center justify-center gap-3 rounded-full bg-gold-400 py-4 text-sm font-semibold text-ink-950 transition hover:bg-gold-300 disabled:opacity-60"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={selectedCoin.logo} alt={selectedCoin.fullName} className="h-5 w-5" />
-              {loading ? "Preparing…" : `Pay ${cryptoPriceDisplay} with ${selectedCoin.symbol}`}
-            </button>
+          <button
+            onClick={handleCreateCryptoPayment}
+            disabled={loading}
+            className="mt-6 flex w-full items-center justify-center gap-3 rounded-full bg-gold-400 py-4 text-sm font-semibold text-ink-950 transition hover:bg-gold-300 disabled:opacity-60"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={selectedCoin.logo} alt={selectedCoin.fullName} className="h-5 w-5" />
+            {loading ? "Preparing…" : `Pay ${cryptoPriceDisplay} with ${selectedCoin.symbol}`}
+          </button>
 
           <button onClick={() => setStep("method")} className="mt-4 block w-full text-center text-sm text-ink-400 hover:text-gold-300 transition dark:text-ink-600">Back</button>
         </div>
@@ -516,10 +417,10 @@ function PaymentContent() {
     );
   }
 
-  // ── Step: Crypto payment instructions (professional deposit page) ──
+  // ── Step: Crypto payment instructions (deposit page) ──
   if (step === "crypto") {
     const wallet = WALLET_ADDRESSES[selectedCoin.id];
-    const cryptoTotalCents = initialFeeCents + (selectedPlan?.priceCents || 0);
+    const cryptoTotalCents = UNLOCK_FEE_CENTS + (selectedPlan?.priceCents || 0);
     const cryptoPriceDisplay = formatPriceCents(cryptoTotalCents, profileInfo.country);
     return (
       <div className="min-h-screen bg-ink-950 px-4 py-12 sm:px-6 dark:bg-white">
@@ -541,7 +442,6 @@ function PaymentContent() {
           {/* QR Code + Wallet address */}
           <div className="mt-6 rounded-2xl border border-white/10 bg-ink-900/60 p-6 dark:border-ink-200 dark:bg-ink-100/60">
             <div className="flex flex-col items-center">
-              {/* QR Code */}
               <div className="rounded-2xl bg-white p-4 shadow-lg">
                 <QRCodeSVG value={wallet} size={180} level="M" includeMargin />
               </div>
