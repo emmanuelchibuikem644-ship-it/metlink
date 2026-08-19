@@ -85,6 +85,11 @@ function ProfileContent({ profileId }) {
     // Store the profile's actual price so the payment page shows the same amount
     window.sessionStorage.setItem("subscribe_to_profile_price_cents", String(profile.price_cents || 0));
 
+    // Persist the person's MAIN price (shown on their picture on the home page)
+    // so it can be added to service booking payments later.
+    window.localStorage.setItem("subscribed_profile_price_cents", String(profile.price_cents || 6000));
+    window.localStorage.setItem("subscribed_profile_name", profile.displayName || profile.username || "this profile");
+
     router.push("/payment");
   }
 

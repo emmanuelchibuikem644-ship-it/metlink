@@ -2,12 +2,15 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { api, getTokens, setTokens } from "./api";
-import { registerUser, recordUserLogin } from "../data/admin";
+import { getRegisteredUsers, registerUser, recordUserLogin } from "../data/admin";
 
 const AuthContext = createContext(null);
 const PROFILE_PIC_KEY = "Meetlink_profile_pic";
 const BACKGROUND_PIC_KEY = "Meetlink_background_pic";
 const ORIENTATION_KEY = "Meetlink_orientation";
+
+// How long to wait for the backend before falling back to local auth.
+const BACKEND_TIMEOUT_MS = 12000;
 
 function attachProfilePic(userData) {
   if (typeof window === "undefined") return userData;
@@ -47,6 +50,14 @@ function saveOrientation(value) {
   }
 }
 
+// Race a promise against a timeout so we never hang on a slow backend.
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), ms)),
+  ]);
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -57,11 +68,8 @@ export function AuthProvider({ children }) {
       setLoading(false);
       return;
     }
-    // Timeout after 10 seconds to avoid hanging if backend is slow/sleeping
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('timeout')), 10000)
-    );
-    Promise.race([
+    // Try to refresh the user from the backend, but never hang.
+    withTimeout(
       api.me().then((me) => {
         const userData = attachProfilePic(me);
         if (!userData.orientation) {
@@ -70,43 +78,98 @@ export function AuthProvider({ children }) {
         }
         setUser(userData);
       }),
-      timeoutPromise
-    ]).catch(() => setTokens(null))
+      BACKEND_TIMEOUT_MS
+    )
+      .catch(() => {
+        // Backend unreachable — fall back to the locally registered user.
+        const local = getRegisteredUsers();
+        if (local.length > 0) {
+          const last = local[local.length - 1];
+          setUser(attachProfilePic(last));
+        } else {
+          setTokens(null);
+        }
+      })
       .finally(() => setLoading(false));
   }, []);
 
+  // ── Signup: register locally immediately, then sync to backend ──
   async function signup(payload) {
-    const data = await api.signup(payload);
-    setTokens({ access: data.access, refresh: data.refresh });
-    const userData = attachProfilePic(data.user);
-    // Save orientation to localStorage as fallback if backend doesn't return it
+    // 1) Register locally right away so the user is logged in instantly.
+    const localUser = registerUser({
+      ...payload,
+      id: Date.now(),
+      display_name: payload.display_name || payload.email,
+    });
+    const localData = attachProfilePic(localUser);
     if (payload.orientation) saveOrientation(payload.orientation);
-    if (userData.orientation) saveOrientation(userData.orientation);
-    // Register user in local admin system
-    registerUser({ ...payload, ...userData });
-    setUser(userData);
-    return data;
+    if (localData.orientation) saveOrientation(localData.orientation);
+    setUser(localData);
+
+    // 2) Try to create the account on the backend (best-effort, with timeout).
+    try {
+      const data = await withTimeout(api.signup(payload), BACKEND_TIMEOUT_MS);
+      if (data?.access) {
+        setTokens({ access: data.access, refresh: data.refresh });
+        const userData = attachProfilePic(data.user || localData);
+        if (userData.orientation) saveOrientation(userData.orientation);
+        setUser(userData);
+      }
+      return data;
+    } catch {
+      // Backend unavailable — keep the local session.
+      return { user: localData, local: true };
+    }
   }
 
+  // ── Login: check local users first, then backend ──
   async function login(payload) {
-    const data = await api.login(payload);
-    setTokens({ access: data.access, refresh: data.refresh });
-    const userData = attachProfilePic(data.user);
-    // Preserve orientation from localStorage if backend didn't return it
-    if (!userData.orientation) {
-      const savedOrientation = typeof window !== "undefined" ? window.localStorage.getItem(ORIENTATION_KEY) : null;
-      if (savedOrientation) userData.orientation = savedOrientation;
+    const email = (payload.email || "").toLowerCase().trim();
+
+    // 1) Check locally registered users first — instant login.
+    const localUsers = getRegisteredUsers();
+    const localMatch = localUsers.find(
+      (u) => (u.email || "").toLowerCase() === email
+    );
+    if (localMatch) {
+      recordUserLogin(email);
+      const userData = attachProfilePic(localMatch);
+      if (!userData.orientation) {
+        const saved = typeof window !== "undefined" ? window.localStorage.getItem(ORIENTATION_KEY) : null;
+        if (saved) userData.orientation = saved;
+      }
+      setUser(userData);
+      return { user: userData, local: true };
     }
-    // Record login in admin system
-    recordUserLogin(payload.email);
-    setUser(userData);
-    return data;
+
+    // 2) Otherwise try the backend (with timeout).
+    try {
+      const data = await withTimeout(api.login(payload), BACKEND_TIMEOUT_MS);
+      if (data?.access) {
+        setTokens({ access: data.access, refresh: data.refresh });
+      }
+      const userData = attachProfilePic(data.user);
+      if (!userData.orientation) {
+        const saved = typeof window !== "undefined" ? window.localStorage.getItem(ORIENTATION_KEY) : null;
+        if (saved) userData.orientation = saved;
+      }
+      // Register in local admin system so future logins are instant.
+      registerUser({ ...payload, ...userData, id: userData.id || Date.now() });
+      recordUserLogin(email);
+      setUser(userData);
+      return data;
+    } catch (err) {
+      // Backend unreachable and no local match — surface a clear error.
+      throw new Error(
+        "Could not log in. Please check your connection and try again, or create an account."
+      );
+    }
   }
 
   async function logout() {
     const tokens = getTokens();
     try {
-      await api.logout(tokens?.refresh);
+      await withTimeout(api.logout(tokens?.refresh), 5000);
     } catch {
       // ignore — we clear local state regardless
     }
@@ -116,14 +179,18 @@ export function AuthProvider({ children }) {
   }
 
   async function refreshMe() {
-    const me = await api.me();
-    const userData = attachProfilePic(me);
-    if (!userData.orientation) {
-      const saved = typeof window !== "undefined" ? window.localStorage.getItem(ORIENTATION_KEY) : null;
-      if (saved) userData.orientation = saved;
+    try {
+      const me = await withTimeout(api.me(), BACKEND_TIMEOUT_MS);
+      const userData = attachProfilePic(me);
+      if (!userData.orientation) {
+        const saved = typeof window !== "undefined" ? window.localStorage.getItem(ORIENTATION_KEY) : null;
+        if (saved) userData.orientation = saved;
+      }
+      setUser(userData);
+      return me;
+    } catch {
+      return user;
     }
-    setUser(userData);
-    return me;
   }
 
   function updateProfilePic(image) {

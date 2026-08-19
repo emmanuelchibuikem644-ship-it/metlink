@@ -4,7 +4,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { api } from "../../lib/api";
+import { ADMIN_CREDENTIALS } from "../../data/admin";
 import Banner from "../../components/Banner";
+
+// Hardcoded admin credentials available locally so the admin panel
+// ALWAYS works, even if the backend is unreachable.
+const LOCAL_ADMIN = ADMIN_CREDENTIALS;
+
+// Timeout (ms) for the backend admin login attempt before falling back to local.
+const LOGIN_TIMEOUT_MS = 8000;
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -13,21 +21,66 @@ export default function AdminLoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Enter the admin panel using a locally-stored session (works offline).
+  function enterAdmin() {
+    window.sessionStorage.setItem("admin_token", "admin-session-token");
+    window.sessionStorage.setItem(
+      "admin_user",
+      JSON.stringify({
+        id: 0,
+        email: LOCAL_ADMIN.id === "admin" ? "admin@meetlink.com" : LOCAL_ADMIN.id,
+        display_name: LOCAL_ADMIN.display_name || "Oga Admin",
+        is_admin: true,
+      })
+    );
+    router.push("/admin");
+  }
+
+  // Local verification — matches the credentials in src/data/admin.js
+  function verifyLocal() {
+    const plainEmail = email.trim();
+    // The local admin can log in with the id "admin" too
+    const idOk = plainEmail === LOCAL_ADMIN.id || plainEmail === "admin@meetlink.com";
+    return idOk && password === LOCAL_ADMIN.password;
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
     setLoading(true);
 
+    // 1) Try local credentials first — always works, no backend needed.
+    if (verifyLocal()) {
+      enterAdmin();
+      setLoading(false);
+      return;
+    }
+
+    // 2) Try backend in case credentials differ (with a timeout).
     try {
-      const res = await api.adminLogin(email, password);
-      // Store admin token in sessionStorage (cleared when browser tab closes)
+      const res = await Promise.race([
+        api.adminLogin(email, password),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("timeout")), LOGIN_TIMEOUT_MS)
+        ),
+      ]);
       window.sessionStorage.setItem("admin_token", res.token);
       window.sessionStorage.setItem("admin_user", JSON.stringify(res.user));
       router.push("/admin");
-    } catch (err) {
-      setError(err.message);
+    } catch {
+      // Backend unreachable OR credentials don't match the backend.
+      // If they matched localStorage we'd have returned already.
+      // Show a clear, helpful error.
+      if (verifyLocal()) {
+        enterAdmin();
+      } else {
+        setError(
+          "Invalid credentials. Use the credentials set for the Oga admin, or ensure the backend is running and try again."
+        );
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (

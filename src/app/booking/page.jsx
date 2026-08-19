@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import { api } from "../../lib/api";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import SubscriptionRoute from "../../components/SubscriptionRoute";
+import { useRouter } from "next/navigation";
 
 function BookingContent() {
+  const router = useRouter();
   const [service, setService] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const [formData, setFormData] = useState({
     full_name: "",
@@ -22,26 +23,27 @@ function BookingContent() {
 
   useEffect(() => {
     const saved = localStorage.getItem("selectedService");
-
     if (saved) {
       setService(JSON.parse(saved));
     }
   }, []);
 
-  const handleSubmit = async (e) => {
+  // On "Proceed", save the booking form details to localStorage,
+  // then route to the payment page. The booking is only submitted to the
+  // admin panel AFTER payment succeeds.
+  function handleProceed(e) {
     e.preventDefault();
     setError("");
-    setSuccess("");
 
     if (!service) {
       setError("Please select a service first.");
       return;
     }
 
-    setSaving(true);
-
-    try {
-      await api.createBooking({
+    // Save the draft booking so the payment page can submit it on success.
+    window.localStorage.setItem(
+      "pendingBooking",
+      JSON.stringify({
         service_name: service.name,
         service_price: service.price,
         full_name: formData.full_name,
@@ -50,23 +52,11 @@ function BookingContent() {
         date: formData.date,
         time: formData.time,
         notes: formData.notes,
-      });
+      })
+    );
 
-      setSuccess("Booking submitted successfully. Awaiting approval.");
-      setFormData({
-        full_name: "",
-        email: "",
-        phone: "",
-        date: "",
-        time: "",
-        notes: "",
-      });
-    } catch (err) {
-      setError(err.message || "Unable to submit booking right now.");
-    } finally {
-      setSaving(false);
-    }
-  };
+    router.push("/service-payment");
+  }
 
   if (!service) {
     return (
@@ -77,8 +67,7 @@ function BookingContent() {
           </h1>
 
           <p className="text-ink-400 dark:text-ink-600">
-            Please select a service from the Services page
-            before making a booking.
+            Please select a service from the Services page before making a booking.
           </p>
         </div>
       </div>
@@ -98,9 +87,7 @@ function BookingContent() {
 
           <p className="text-ink-400 dark:text-ink-600">{service.name}</p>
 
-          <p className="text-green-600 font-bold">
-            {service.price}
-          </p>
+          <p className="text-green-600 font-bold">{service.price}</p>
         </div>
 
         {error && (
@@ -109,25 +96,14 @@ function BookingContent() {
           </div>
         )}
 
-        {success && (
-          <div className="mb-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-400">
-            {success}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleProceed} className="space-y-5">
 
           <input
             type="text"
             placeholder="Full Name"
             required
             value={formData.full_name}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                full_name: e.target.value,
-              })
-            }
+            onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
             className="w-full border border-white/10 bg-ink-950 p-3 rounded-lg text-ink-50 outline-none focus:border-gold-400/50 dark:border-ink-200 dark:bg-white dark:text-ink-950"
           />
 
@@ -136,12 +112,7 @@ function BookingContent() {
             placeholder="Email Address"
             required
             value={formData.email}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                email: e.target.value,
-              })
-            }
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             className="w-full border border-white/10 bg-ink-950 p-3 rounded-lg text-ink-50 outline-none focus:border-gold-400/50 dark:border-ink-200 dark:bg-white dark:text-ink-950"
           />
 
@@ -150,12 +121,7 @@ function BookingContent() {
             placeholder="Phone Number"
             required
             value={formData.phone}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                phone: e.target.value,
-              })
-            }
+            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
             className="w-full border border-white/10 bg-ink-950 p-3 rounded-lg text-ink-50 outline-none focus:border-gold-400/50 dark:border-ink-200 dark:bg-white dark:text-ink-950"
           />
 
@@ -163,12 +129,7 @@ function BookingContent() {
             type="date"
             required
             value={formData.date}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                date: e.target.value,
-              })
-            }
+            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
             className="w-full border border-white/10 bg-ink-950 p-3 rounded-lg text-ink-50 outline-none focus:border-gold-400/50 dark:border-ink-200 dark:bg-white dark:text-ink-950"
           />
 
@@ -176,12 +137,7 @@ function BookingContent() {
             type="time"
             required
             value={formData.time}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                time: e.target.value,
-              })
-            }
+            onChange={(e) => setFormData({ ...formData, time: e.target.value })}
             className="w-full border border-white/10 bg-ink-950 p-3 rounded-lg text-ink-50 outline-none focus:border-gold-400/50 dark:border-ink-200 dark:bg-white dark:text-ink-950"
           />
 
@@ -189,12 +145,7 @@ function BookingContent() {
             rows="5"
             placeholder="Notes / Special Requests"
             value={formData.notes}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                notes: e.target.value,
-              })
-            }
+            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
             className="w-full border border-white/10 bg-ink-950 p-3 rounded-lg text-ink-50 outline-none focus:border-gold-400/50 dark:border-ink-200 dark:bg-white dark:text-ink-950"
           />
 
@@ -203,7 +154,7 @@ function BookingContent() {
             disabled={saving}
             className="w-full bg-gold-400 text-ink-950 py-3 rounded-lg font-semibold hover:bg-gold-300 transition disabled:opacity-60"
           >
-            {saving ? "Submitting…" : "Submit Booking Request"}
+            Proceed to Payment
           </button>
 
         </form>

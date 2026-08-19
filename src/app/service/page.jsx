@@ -105,8 +105,8 @@ function ServicesContent() {
       return;
     }
 
-    // Paid services go through the payment gateway first, then booking.
-    router.push("/service-payment");
+    // Paid services go to the booking form first, then payment.
+    router.push("/booking");
   }
 
   return (
@@ -129,7 +129,7 @@ function ServicesContent() {
           <div className="mb-8 rounded-2xl border border-gold-400/20 bg-gold-400/5 p-5 text-center">
             <p className="text-sm text-gold-300 dark:text-gold-500">Selected: <strong>{selectedService.name}</strong> — {selectedService.price}</p>
             <p className="mt-1 text-xs text-ink-400 dark:text-ink-600">
-              {selectedService.id === 8 ? "Redirecting to chat…" : "Redirecting to payment…"}
+              {selectedService.id === 8 ? "Redirecting to chat…" : "Redirecting to booking…"}
             </p>
           </div>
         )}

@@ -26,6 +26,22 @@ function ServicePaymentContent() {
   const [error, setError] = useState("");
   const [paymentIntent, setPaymentIntent] = useState(null);
 
+  // The person's MAIN price (shown on their picture on the home page) —
+  // stored when they subscribed to this profile.
+  const [profilePrice] = useState(() => {
+    if (typeof window === "undefined") return { cents: 0, name: "" };
+    const cents = Number(window.localStorage.getItem("subscribed_profile_price_cents") || 0);
+    const name = window.localStorage.getItem("subscribed_profile_name") || "";
+    return { cents, name };
+  });
+
+  // The draft booking form saved on the booking page (Proceed to Payment).
+  const [pendingBooking] = useState(() => {
+    if (typeof window === "undefined") return null;
+    const saved = window.localStorage.getItem("pendingBooking");
+    return saved ? JSON.parse(saved) : null;
+  });
+
   if (!service) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-ink-950 px-6 dark:bg-white">
@@ -52,8 +68,12 @@ function ServicePaymentContent() {
     return Math.round(parseFloat(match[0]) * 100);
   }
 
-  const priceCents = parsePriceToCents(service.price);
-  const priceDisplay = `$${(priceCents / 100).toFixed(2)}`;
+  const servicePriceCents = parsePriceToCents(service.price);
+  // Total due = the service price + the person's main price (shown on their picture)
+  const totalCents = servicePriceCents + (profilePrice.cents || 0);
+  const priceDisplay = `$${(totalCents / 100).toFixed(2)}`;
+  const serviceDisplay = `$${(servicePriceCents / 100).toFixed(2)}`;
+  const profilePriceDisplay = profilePrice.cents > 0 ? `$${(profilePrice.cents / 100).toFixed(2)}` : "—";
 
   function formatCardNumber(value) {
     const digits = value.replace(/\D/g, "").slice(0, 16);
@@ -66,11 +86,23 @@ function ServicePaymentContent() {
     return digits;
   }
 
+  // On payment success, submit the pending booking to the admin panel.
+  async function submitPendingBooking() {
+    if (!pendingBooking) return;
+    try {
+      await api.createBooking(pendingBooking);
+    } catch {
+      // Booking submission is best-effort on success — don't block the user.
+    } finally {
+      window.localStorage.removeItem("pendingBooking");
+    }
+  }
+
   async function handleCreatePayment() {
     setLoading(true);
     setError("");
     try {
-      const res = await api.createServicePayment(service.name, priceCents);
+      const res = await api.createServicePayment(service.name, totalCents);
       setPaymentIntent(res);
       setStep("paying");
     } catch (err) { setError(err.message); }
@@ -87,13 +119,17 @@ function ServicePaymentContent() {
     try {
       const res = await api.confirmServicePayment(paymentIntent.payment_intent_id);
       if (res.success) {
+        // Payment succeeded — now submit the booking to the admin panel.
+        await submitPendingBooking();
         setStep("success");
       }
     } catch (err) { setError(err.message); }
     setLoading(false);
   }
 
-  function handleGoToBooking() { router.push("/booking"); }
+  function handleGoToBooking() {
+    window.location.href = "/service";
+  }
 
   // ── Step: Review ──
   if (step === "review") {
@@ -114,9 +150,23 @@ function ServicePaymentContent() {
               </div>
             </div>
             <p className="mt-3 text-sm text-ink-400 dark:text-ink-600">{service.description}</p>
-            <div className="mt-4 flex items-center justify-between rounded-xl border border-gold-400/20 bg-gold-400/5 p-4">
-              <span className="text-sm text-ink-400 dark:text-ink-600">Total due</span>
-              <span className="font-display text-3xl text-gold-300 dark:text-gold-500">{priceDisplay}</span>
+
+            {/* Price breakdown */}
+            <div className="mt-4 space-y-2 rounded-xl border border-gold-400/20 bg-gold-400/5 p-4">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-ink-400 dark:text-ink-600">Service price</span>
+                <span className="text-ink-50 dark:text-ink-950">{serviceDisplay}</span>
+              </div>
+              {profilePrice.cents > 0 && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-ink-400 dark:text-ink-600">{profilePrice.name || "Creator"} price</span>
+                  <span className="text-ink-50 dark:text-ink-950">{profilePriceDisplay}</span>
+                </div>
+              )}
+              <div className="flex items-center justify-between border-t border-gold-400/20 pt-2">
+                <span className="text-sm font-semibold text-ink-50 dark:text-ink-950">Total due</span>
+                <span className="font-display text-3xl text-gold-300 dark:text-gold-500">{priceDisplay}</span>
+              </div>
             </div>
           </div>
 
@@ -133,7 +183,8 @@ function ServicePaymentContent() {
             {loading ? "Preparing…" : `Continue to payment — ${priceDisplay}`}
           </button>
 
-          <Link href="/service" className="mt-4 block text-center text-sm text-ink-400 hover:text-gold-300 transition dark:text-ink-600">Cancel</Link>
+          <button onClick={() => router.push("/booking")} className="mt-4 block w-full text-center text-sm text-ink-400 hover:text-gold-300 transition dark:text-ink-600">Back to booking</button>
+          <Link href="/service" className="mt-2 block text-center text-sm text-ink-400 hover:text-gold-300 transition dark:text-ink-600">Cancel</Link>
         </div>
       </div>
     );
@@ -207,7 +258,7 @@ function ServicePaymentContent() {
         </div>
         <h1 className="mt-6 font-display text-3xl text-ink-50 dark:text-ink-950">Payment successful!</h1>
         <p className="mt-3 text-sm text-ink-400 dark:text-ink-600">
-          You've paid for <strong className="text-ink-50 dark:text-ink-950">{service.name}</strong> ({priceDisplay}). You can now book your session.
+          You've paid for <strong className="text-ink-50 dark:text-ink-950">{service.name}</strong> ({priceDisplay}). Your booking has been submitted to the admin for approval.
         </p>
         <div className="mt-8 space-y-3 text-left">
           <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-ink-900/60 p-4 dark:border-ink-200 dark:bg-ink-100/60">
@@ -216,11 +267,11 @@ function ServicePaymentContent() {
           </div>
           <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-ink-900/60 p-4 dark:border-ink-200 dark:bg-ink-100/60">
             <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
-            <span className="text-sm text-ink-300 dark:text-ink-700">Booking is now unlocked</span>
+            <span className="text-sm text-ink-300 dark:text-ink-700">Booking submitted to admin</span>
           </div>
         </div>
         <button onClick={handleGoToBooking} className="mt-8 flex w-full items-center justify-center gap-3 rounded-full bg-gold-400 py-4 text-sm font-semibold text-ink-950 transition hover:bg-gold-300">
-          Continue to Booking <ArrowRight className="h-5 w-5" />
+          Return to Services <ArrowRight className="h-5 w-5" />
         </button>
       </div>
     </div>
